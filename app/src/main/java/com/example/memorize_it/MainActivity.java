@@ -2,42 +2,35 @@ package com.example.memorize_it;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.Console;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-
 public class MainActivity extends AppCompatActivity {
+    String TAG = "HO-HO-HO";
+    DBHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createNotificationChannel();
-
+        helper = new DBHelper(this);
 
 // notificationId is a unique int for each notification that you must define
-
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -59,25 +52,35 @@ public class MainActivity extends AppCompatActivity {
         newFragment.show(getSupportFragmentManager(), "timePicker");
         System.out.println(newFragment.getDialog());
     }
-    public void OnClicked(View v) throws JSONException {
-        JSONArray time_message = new JSONArray();
-        JSONObject obj = new JSONObject();
-        TextView my_time = findViewById(R.id.my_time);
-        obj.put(my_time.getText().toString(), "123");
-        time_message.put(obj);
-        File directory = getFilesDir(); //or getExternalFilesDir(null); for external storage
-        File file = new File(directory, "time_text.json");
-        System.out.println(time_message.toString());
-        System.out.println(directory.toString());
-        try (FileWriter file_ = new FileWriter(file)) {
-            //We can write any JSONArray or JSONObject instance to the file
-            file_.write(time_message.toString());
-            file_.flush();
+    public void OnClicked(View v) {
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        //Link text objects
+        TextView my_time = findViewById(R.id.my_time);
+        TextView name = findViewById(R.id.name_text);
+        TextView message = findViewById(R.id.message);
+
+        // Object for content
+        ContentValues cv = new ContentValues();
+
+        //Connecting to DB
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        //Inserting content
+        if (!my_time.getText().toString().isEmpty()) {
+            cv.put("name", name.getText().toString());
+            cv.put("time", my_time.getText().toString());
+            cv.put("message", message.getText().toString());
+            db.insert("Notes", null, cv);
+            //Close connect to db
+            helper.close();
+            db.close();
+            startService(new Intent(this, MyService.class));
+            this.finish();
+        } else{
+            Toast.makeText(this, "Введите дату", Toast.LENGTH_LONG).show();
         }
-        startService(new Intent(this, MyService.class));
+
+
     }
 
 
