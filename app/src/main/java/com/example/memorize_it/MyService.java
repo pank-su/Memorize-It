@@ -6,20 +6,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.android.material.tabs.TabLayout;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -51,12 +45,12 @@ public class MyService extends Service {
 
         //Getting values
         c.moveToPosition(id);
-        String chanelId = String.valueOf(id);
+        String channelId = String.valueOf(id);
         String title = c.getString(c.getColumnIndex("name"));
         String text = c.getString(c.getColumnIndex("message"));
 
         //Creating notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, chanelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
                 .setContentText(text)
@@ -115,6 +109,7 @@ class PrimeThread extends Thread {
                 e.printStackTrace();
             }
             System.out.println("Сервис работает");
+            break;
         }
     }
 }

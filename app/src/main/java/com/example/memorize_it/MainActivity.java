@@ -14,15 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,10 +28,9 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
         helper = new DBHelper(this);
 
-
 // notificationId is a unique int for each notification that you must define
-
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -61,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         newFragment.show(getSupportFragmentManager(), "timePicker");
         System.out.println(newFragment.getDialog());
     }
-    public void OnClicked(View v) throws JSONException {
+    public void OnClicked(View v) {
 
         //Link text objects
         TextView my_time = findViewById(R.id.my_time);
@@ -75,16 +66,21 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = helper.getWritableDatabase();
 
         //Inserting content
-        cv.put("name", name.getText().toString());
-        cv.put("time", my_time.getText().toString());
-        cv.put("message", message.getText().toString());
-        db.insert("Notes", null, cv);
+        if (!my_time.getText().toString().isEmpty()) {
+            cv.put("name", name.getText().toString());
+            cv.put("time", my_time.getText().toString());
+            cv.put("message", message.getText().toString());
+            db.insert("Notes", null, cv);
+            //Close connect to db
+            helper.close();
+            db.close();
+            startService(new Intent(this, MyService.class));
+            this.finish();
+        } else{
+            Toast.makeText(this, "Введите дату", Toast.LENGTH_LONG).show();
+        }
 
-        //Close connect to db
-        helper.close();
-        db.close();
-        Log.i(TAG, "before start service");
-        startService(new Intent(this, MyService.class));
+
     }
 
 
