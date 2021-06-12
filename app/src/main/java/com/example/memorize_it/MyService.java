@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class MyService extends Service {
+    String TAG = "HO-HO-HO";
     public MyService() {
     }
 
@@ -57,11 +58,18 @@ public class MyService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(2, builder.build());
+        String id_in_table = String.valueOf(c.getInt(c.getColumnIndex("id")));
 
         //Closing connect
         c.close();
-        helper.close();
         db.close();
+
+        //Deleting worked notifications
+        db = helper.getWritableDatabase();
+        db.delete("Notes", "id = ?", new String[] {id_in_table});
+        db.close();
+        helper.close();
+
     }
 }
 
@@ -109,7 +117,6 @@ class PrimeThread extends Thread {
                 e.printStackTrace();
             }
             System.out.println("Сервис работает");
-            break;
         }
     }
 }
