@@ -21,11 +21,12 @@ public class Menu extends AppCompatActivity {
 
         switch (v.getId()){
             case R.id.Create_button:
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                Intent create = new Intent(this, MainActivity.class);
+                startActivity(create);
                 break;
             case R.id.Read_button:
-                Log.i(TAG, "Read button");
+                Intent read = new Intent(this, ReadActivity.class);
+                startActivity(read);
                 break;
             case R.id.Exit_button:
                 finish();
