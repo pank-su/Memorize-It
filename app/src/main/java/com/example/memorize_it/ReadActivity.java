@@ -6,7 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import android.widget.ListView;
+
 
 import java.util.ArrayList;
 
@@ -20,6 +26,7 @@ public class ReadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
         Log.i(TAG, "Start");
+        findViewById(R.id.i_havent_text).setVisibility(View.INVISIBLE);
         fillData();
         adapter = new NoteAdapter(this, notes);
 
@@ -34,9 +41,17 @@ public class ReadActivity extends AppCompatActivity {
         Cursor c = db.query("Notes", null, null, null, null, null, null);
         c.moveToFirst();
         do{
-            String name = c.getString(c.getColumnIndex("name"));
-            String time = c.getString(c.getColumnIndex("time"));
-            String annot = c.getString(c.getColumnIndex("message"));
+            String annot, name, time;
+
+            try {
+                name = c.getString(c.getColumnIndex("name"));
+                time = c.getString(c.getColumnIndex("time"));
+                annot = c.getString(c.getColumnIndex("message"));
+            } catch (Exception e){
+                findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
+                break;
+            }
+
             try {
                 annot = annot.substring(0, 20);
             } catch (Exception e){

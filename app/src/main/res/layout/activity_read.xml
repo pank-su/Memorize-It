@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ReadActivity">
 
+
+    <TextView
+        android:id="@+id/i_havent_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Вы не создали ни одной записи"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/List_of_notes"
+        app:layout_constraintTop_toTopOf="@+id/List_of_notes" />
+
     <ListView
         android:id="@+id/List_of_notes"
         android:layout_width="409dp"
@@ -13,5 +24,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </ListView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
