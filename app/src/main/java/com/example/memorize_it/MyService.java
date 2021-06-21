@@ -1,24 +1,18 @@
 package com.example.memorize_it;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.google.android.material.tabs.TabLayout;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 
 public class MyService extends Service {
     String TAG = "HO-HO-HO";
@@ -76,47 +70,70 @@ public class MyService extends Service {
 class PrimeThread extends Thread {
 
     MyService service;
+    Date near_date;
+    int this_i;
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
     public PrimeThread(MyService service){
         this.service = service;
     }
 
     public void run(){
+        set_near_date();
+        Date date_now;
         while (true){
             try {
-                DBHelper helper = new DBHelper(this.service);
-                SQLiteDatabase db = helper.getReadableDatabase();
-                Cursor c = db.query("Notes", null, null, null, null, null, null);
-
-                for (int i = 0; i < c.getCount(); i++){
-                    c.moveToPosition(i);
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
-                    Date date = null;
-                    try {
-                        date = sdf.parse(c.getString(c.getColumnIndex("time")));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    Date date_now = new Date();
-                    try {
-                        date_now = sdf.parse(sdf.format(date_now));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    if (date.compareTo(date_now) == 0){
-                        this.service.notif(i);
-                    }
+                date_now = new Date();
+                try {
+                    date_now = sdf.parse(sdf.format(date_now));
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                c.close();
-                helper.close();
-                db.close();
+                if (date_now.compareTo(near_date) == 0) {
+                    this.service.notif(this_i);
+                }
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             System.out.println("Сервис работает");
+        }
+    }
+
+    public void set_near_date(){
+        DBHelper helper = new DBHelper(this.service);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = db.query("Notes", null, null, null, null, null, null);
+        long min_dif = Long.MAX_VALUE;
+        for (int i = 0; i < c.getCount(); i++) {
+            c.moveToPosition(i);
+
+
+            Date date = null;
+            try {
+                date = sdf.parse(c.getString(c.getColumnIndex("time")));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            Date date_now = new Date();
+            try {
+                date_now = sdf.parse(sdf.format(date_now));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long dif = date.getTime() - date_now.getTime();
+
+            if (date.compareTo(date_now) == 0) {
+                this.service.notif(i);
+            } else if (dif < min_dif) {
+                min_dif = dif;
+                near_date = date;
+                this_i = i;
+            }
+            c.close();
+            helper.close();
+            db.close();
         }
     }
 }

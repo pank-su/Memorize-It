@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     String TAG = "HO-HO-HO";
     DBHelper helper;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

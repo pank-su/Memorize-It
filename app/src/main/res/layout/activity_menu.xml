@@ -16,11 +16,11 @@
 
         <Button
             android:id="@+id/Exit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="45dp"
             android:layout_marginTop="50dp"
-            android:onClick="onClicked"
             android:layout_marginBottom="50dp"
+            android:onClick="onClicked"
             android:text="Exit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
