@@ -1,5 +1,6 @@
 package com.example.memorize_it;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import java.util.Date;
 
 public class MyService extends Service {
     String TAG = "HO-HO-HO";
+    public static final String CHANNEL_ID = "1";
     public MyService() {
     }
 
@@ -32,6 +34,34 @@ public class MyService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    public void open_app(int id){
+        DBHelper helper = new DBHelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = db.query("Notes", null, null, null, null, null, null);
+
+        //Getting values
+        c.moveToPosition(id);
+        String title = c.getString(c.getColumnIndex("name"));
+        String text = c.getString(c.getColumnIndex("message"));
+        String id_in_table = String.valueOf(c.getInt(c.getColumnIndex("id")));
+
+        //Closing connect
+        c.close();
+        db.close();
+
+        //Deleting worked notifications
+        db = helper.getWritableDatabase();
+        db.delete("Notes", "id = ?", new String[] {id_in_table});
+        db.close();
+        helper.close();
+
+        Intent intent = new Intent(this, OpenNote.class);
+        intent.putExtra("name", title);
+        intent.putExtra("message", text);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
     public void notif(int id){
         //Connect to db
         DBHelper helper = new DBHelper(this);
@@ -40,18 +70,25 @@ public class MyService extends Service {
 
         //Getting values
         c.moveToPosition(id);
-        String channelId = String.valueOf(id);
         String title = c.getString(c.getColumnIndex("name"));
         String text = c.getString(c.getColumnIndex("message"));
 
         //Creating notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+        Intent intent = new Intent(this, OpenNote.class);
+        intent.putExtra("name", title);
+        intent.putExtra("message", text);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        //Creating notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(2, builder.build());
+        notificationManager.notify(id, builder.build());
         String id_in_table = String.valueOf(c.getInt(c.getColumnIndex("id")));
 
         //Closing connect
@@ -91,8 +128,11 @@ class PrimeThread extends Thread {
                 }
                 if (date_now.compareTo(near_date) == 0) {
                     this.service.notif(this_i);
+                    // this.service.open_app(this_i);
+                    set_near_date();
                 }
-                Thread.sleep(60000);
+                date_now = new Date();
+                Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
