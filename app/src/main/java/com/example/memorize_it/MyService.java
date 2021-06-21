@@ -131,9 +131,9 @@ class PrimeThread extends Thread {
                 near_date = date;
                 this_i = i;
             }
-            c.close();
-            helper.close();
-            db.close();
         }
+        c.close();
+        helper.close();
+        db.close();
     }
 }
