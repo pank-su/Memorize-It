@@ -6,9 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import android.widget.ListView;
+
 
 import java.util.ArrayList;
 
@@ -47,6 +51,7 @@ public class ReadActivity extends AppCompatActivity {
                 findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
                 break;
             }
+
             try {
                 annot = annot.substring(0, 20);
             } catch (Exception e){
