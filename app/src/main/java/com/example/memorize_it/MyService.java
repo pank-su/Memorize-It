@@ -34,6 +34,34 @@ public class MyService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    public void open_app(int id){
+        DBHelper helper = new DBHelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = db.query("Notes", null, null, null, null, null, null);
+
+        //Getting values
+        c.moveToPosition(id);
+        String title = c.getString(c.getColumnIndex("name"));
+        String text = c.getString(c.getColumnIndex("message"));
+        String id_in_table = String.valueOf(c.getInt(c.getColumnIndex("id")));
+
+        //Closing connect
+        c.close();
+        db.close();
+
+        //Deleting worked notifications
+        db = helper.getWritableDatabase();
+        db.delete("Notes", "id = ?", new String[] {id_in_table});
+        db.close();
+        helper.close();
+
+        Intent intent = new Intent(this, OpenNote.class);
+        intent.putExtra("name", title);
+        intent.putExtra("message", text);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
     public void notif(int id){
         //Connect to db
         DBHelper helper = new DBHelper(this);
@@ -90,7 +118,6 @@ class PrimeThread extends Thread {
     public void run(){
         set_near_date();
         Date date_now;
-        boolean bool = true;
         while (true){
             try {
                 date_now = new Date();
@@ -101,15 +128,11 @@ class PrimeThread extends Thread {
                 }
                 if (date_now.compareTo(near_date) == 0) {
                     this.service.notif(this_i);
+                    // this.service.open_app(this_i);
                     set_near_date();
                 }
-                if (bool)
-                {
-                    date_now = new Date();
-                    Thread.sleep(60000 - date_now.getSeconds() * 1000);
-                }
-                else
-                    Thread.sleep(60000);
+                date_now = new Date();
+                Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
