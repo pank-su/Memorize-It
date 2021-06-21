@@ -152,5 +152,6 @@ class PrimeThread extends Thread {
         c.close();
         helper.close();
         db.close();
+
     }
 }
