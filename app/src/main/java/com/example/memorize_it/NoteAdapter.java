@@ -1,6 +1,7 @@
 package com.example.memorize_it;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,17 @@ public class NoteAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.Name_note)).setText(n.name);
         ((TextView) view.findViewById(R.id.annotation)).setText(n.annotation);
         ((TextView) view.findViewById(R.id.time_note)).setText(n.date);
+        view.setOnClickListener(onClickListener);
         return view;
     }
+
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(ctx, OpenNote.class);
+            intent.putExtra("name", ((TextView) v.findViewById(R.id.Name_note)).getText())
+                    .putExtra("message", ((TextView) v.findViewById(R.id.annotation)).getText());
+            ctx.startActivity(intent);
+        }
+    };
 }

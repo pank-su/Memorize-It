@@ -1,5 +1,6 @@
 package com.example.memorize_it;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import java.util.Date;
 
 public class MyService extends Service {
     String TAG = "HO-HO-HO";
+    public static final String CHANNEL_ID = "1";
     public MyService() {
     }
 
@@ -40,18 +42,25 @@ public class MyService extends Service {
 
         //Getting values
         c.moveToPosition(id);
-        String channelId = String.valueOf(id);
         String title = c.getString(c.getColumnIndex("name"));
         String text = c.getString(c.getColumnIndex("message"));
 
         //Creating notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+        Intent intent = new Intent(this, OpenNote.class);
+        intent.putExtra("name", title);
+        intent.putExtra("message", text);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        //Creating notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(2, builder.build());
+        notificationManager.notify(id, builder.build());
         String id_in_table = String.valueOf(c.getInt(c.getColumnIndex("id")));
 
         //Closing connect
@@ -81,6 +90,7 @@ class PrimeThread extends Thread {
     public void run(){
         set_near_date();
         Date date_now;
+        boolean bool = true;
         while (true){
             try {
                 date_now = new Date();
@@ -91,8 +101,15 @@ class PrimeThread extends Thread {
                 }
                 if (date_now.compareTo(near_date) == 0) {
                     this.service.notif(this_i);
+                    set_near_date();
                 }
-                Thread.sleep(60000);
+                if (bool)
+                {
+                    date_now = new Date();
+                    Thread.sleep(60000 - date_now.getSeconds() * 1000);
+                }
+                else
+                    Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
