@@ -12,6 +12,7 @@ import android.util.Pair;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import java.io.Console;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class MyService extends Service {
     String TAG = "HO-HO-HO";
-    public static final String CHANNEL_ID = "1";
+    public static final String CHANNEL_ID = "2";
     PrimeThread p;
     ContentValues cv;
     public MyService() {
@@ -40,7 +41,7 @@ public class MyService extends Service {
             p = new PrimeThread(this);
             p.start();
         }
-        return Service.START_STICKY;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     public void open_app(int id){
@@ -78,10 +79,10 @@ public class MyService extends Service {
         //Connect to db
         DBHelper helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor c = db.query("Notes", null, null, null, null, null, null);
+        Cursor c = db.query("Notes", null, "id = ?", new String[] {Integer.toString(id)}, null, null, null);
 
         //Getting values
-        c.moveToPosition(id);
+        c.moveToPosition(0);
         String title = c.getString(c.getColumnIndex("name"));
         String text = c.getString(c.getColumnIndex("message"));
 
@@ -107,6 +108,7 @@ public class MyService extends Service {
         db.close();
 
         //Updating worked notifications
+        db = helper.getWritableDatabase();
         cv = new ContentValues();
         cv.put("runned", 1);
         // db.delete("Notes", "id = ?", new String[] {id_in_table});
@@ -141,7 +143,8 @@ class PrimeThread extends Thread {
                 }
                 // Это надо исправлять, но пока это лучший выход
                 for (Pair<Date, Integer> pair:dates) {
-                    if (pair.first == date_now) {
+                    if (date_now.compareTo(pair.first) == 0) {
+                        System.out.println("shit");
                         this.service.notif(pair.second);
                         set_dates();
                         break;
