@@ -2,22 +2,28 @@ package com.example.memorize_it;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
-import android.widget.Toast;
+import android.util.Pair;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class MyService extends Service {
     String TAG = "HO-HO-HO";
     public static final String CHANNEL_ID = "1";
+    PrimeThread p;
+    ContentValues cv;
     public MyService() {
     }
 
@@ -28,10 +34,13 @@ public class MyService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this,"Сервис запустился", Toast.LENGTH_SHORT).show();
-        PrimeThread p = new PrimeThread(this);
-        p.start();
-        return super.onStartCommand(intent, flags, startId);
+        try {
+            p.set_dates();
+        } catch (Exception e){
+            p = new PrimeThread(this);
+            p.start();
+        }
+        return Service.START_STICKY;
     }
 
     public void open_app(int id){
@@ -49,9 +58,12 @@ public class MyService extends Service {
         c.close();
         db.close();
 
-        //Deleting worked notifications
+        //Updating worked notifications
         db = helper.getWritableDatabase();
-        db.delete("Notes", "id = ?", new String[] {id_in_table});
+        cv = new ContentValues();
+        cv.put("runned", 1);
+        // db.delete("Notes", "id = ?", new String[] {id_in_table});
+        db.update("Notes", cv, "id = ?", new String[] {id_in_table});
         db.close();
         helper.close();
 
@@ -89,15 +101,16 @@ public class MyService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(id, builder.build());
-        String id_in_table = String.valueOf(c.getInt(c.getColumnIndex("id")));
 
         //Closing connect
         c.close();
         db.close();
 
-        //Deleting worked notifications
-        db = helper.getWritableDatabase();
-        db.delete("Notes", "id = ?", new String[] {id_in_table});
+        //Updating worked notifications
+        cv = new ContentValues();
+        cv.put("runned", 1);
+        // db.delete("Notes", "id = ?", new String[] {id_in_table});
+        db.update("Notes", cv, "id = ?", new String[] {Integer.toString(id)});
         db.close();
         helper.close();
 
@@ -107,8 +120,7 @@ public class MyService extends Service {
 class PrimeThread extends Thread {
 
     MyService service;
-    Date near_date;
-    int this_i;
+    List<Pair<Date, Integer>> dates = new ArrayList();
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
     public PrimeThread(MyService service){
@@ -116,7 +128,8 @@ class PrimeThread extends Thread {
     }
 
     public void run(){
-        set_near_date();
+        System.out.println("runned");
+        set_dates();
         Date date_now;
         while (true){
             try {
@@ -126,10 +139,13 @@ class PrimeThread extends Thread {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                if (date_now.compareTo(near_date) == 0) {
-                    this.service.notif(this_i);
-                    // this.service.open_app(this_i);
-                    set_near_date();
+                // Это надо исправлять, но пока это лучший выход
+                for (Pair<Date, Integer> pair:dates) {
+                    if (pair.first == date_now) {
+                        this.service.notif(pair.second);
+                        set_dates();
+                        break;
+                    }
                 }
                 date_now = new Date();
                 Thread.sleep(60000 - date_now.getSeconds() * 1000);
@@ -140,37 +156,23 @@ class PrimeThread extends Thread {
         }
     }
 
-    public void set_near_date(){
+    public void set_dates(){
         DBHelper helper = new DBHelper(this.service);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query("Notes", null, null, null, null, null, null);
         long min_dif = Long.MAX_VALUE;
         for (int i = 0; i < c.getCount(); i++) {
             c.moveToPosition(i);
-
-
+            if (c.getInt(c.getColumnIndex("runned")) == 1){
+                continue;
+            }
             Date date = null;
             try {
                 date = sdf.parse(c.getString(c.getColumnIndex("time")));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-            Date date_now = new Date();
-            try {
-                date_now = sdf.parse(sdf.format(date_now));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            long dif = date.getTime() - date_now.getTime();
-
-            if (date.compareTo(date_now) == 0) {
-                this.service.notif(i);
-            } else if (dif < min_dif) {
-                min_dif = dif;
-                near_date = date;
-                this_i = i;
-            }
+            dates.add(Pair.create(date, c.getInt(c.getColumnIndex("id"))));
         }
         c.close();
         helper.close();

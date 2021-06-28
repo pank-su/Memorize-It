@@ -16,7 +16,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.i("HO-HO-HO", "Create table");
-        db.execSQL("Create table Notes(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name string, time string, message string)");
+        db.execSQL("Create table Notes(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name string, time string, message string, runned BOOLEAN)");
     }
 
     @Override

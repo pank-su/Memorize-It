@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class NoteAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.Name_note)).setText(n.name);
         ((TextView) view.findViewById(R.id.annotation)).setText(n.annotation);
         ((TextView) view.findViewById(R.id.time_note)).setText(n.date);
+        ((Switch) view.findViewById(R.id.switch1)).setChecked(n.runned == 0);
         view.setOnClickListener(onClickListener);
         return view;
     }

@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
             cv.put("message", message.getText().toString());
+            cv.put("runned", 0);
             db.insert("Notes", null, cv);
             //Close connect to db
             helper.close();
