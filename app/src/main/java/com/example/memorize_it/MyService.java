@@ -47,10 +47,8 @@ public class MyService extends Service {
     public void open_app(int id){
         DBHelper helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor c = db.query("Notes", null, null, null, null, null, null);
+        Cursor c = db.query("Notes", null, "id = ?", new String[] {Integer.toString(id)}, null, null, null);
 
-        //Getting values
-        c.moveToPosition(id);
         String title = c.getString(c.getColumnIndex("name"));
         String text = c.getString(c.getColumnIndex("message"));
         String id_in_table = String.valueOf(c.getInt(c.getColumnIndex("id")));
@@ -81,7 +79,6 @@ public class MyService extends Service {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query("Notes", null, "id = ?", new String[] {Integer.toString(id)}, null, null, null);
 
-        //Getting values
         c.moveToPosition(0);
         String title = c.getString(c.getColumnIndex("name"));
         String text = c.getString(c.getColumnIndex("message"));
@@ -141,13 +138,17 @@ class PrimeThread extends Thread {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                boolean modif = false;
                 // Это надо исправлять, но пока это лучший выход
                 for (Pair<Date, Integer> pair:dates) {
                     if (date_now.compareTo(pair.first) == 0) {
                         this.service.notif(pair.second);
-                        set_dates();
+                        // set_dates();
+                        modif = true;
                     }
                 }
+                if (modif)
+                    set_dates();
                 date_now = new Date();
                 Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
