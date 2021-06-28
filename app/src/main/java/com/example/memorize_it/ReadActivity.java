@@ -42,11 +42,13 @@ public class ReadActivity extends AppCompatActivity {
         c.moveToFirst();
         do{
             String annot, name, time;
+            int runned;
 
             try {
                 name = c.getString(c.getColumnIndex("name"));
                 time = c.getString(c.getColumnIndex("time"));
                 annot = c.getString(c.getColumnIndex("message"));
+                runned = c.getInt(c.getColumnIndex("runned"));
             } catch (Exception e){
                 findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
                 break;
@@ -58,7 +60,7 @@ public class ReadActivity extends AppCompatActivity {
 
             }
 
-            Note n = new Note(name, annot, time);
+            Note n = new Note(name, annot, time, runned);
             Log.i(TAG, name + " " + annot + " " + time);
             notes.add(n);
         }while (c.moveToNext());

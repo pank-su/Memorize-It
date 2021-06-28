@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,10 +23,17 @@ public class MainActivity extends AppCompatActivity {
     String TAG = "HO-HO-HO";
     DBHelper helper;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EditText editText = (EditText) findViewById(R.id.my_time);
+        editText.setFocusable(false);
+        editText.setFocusableInTouchMode(false);
+        editText.setClickable(false);
+        editText.setLongClickable(false);
+        editText.setCursorVisible(false);
         createNotificationChannel();
         helper = new DBHelper(this);
 
@@ -40,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             CharSequence name = "Memorize_it";
             String description = "Для нашего приложения";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("1", name, importance);
+            NotificationChannel channel = new NotificationChannel("2", name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
@@ -71,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
             cv.put("message", message.getText().toString());
+            cv.put("runned", 0);
             db.insert("Notes", null, cv);
             //Close connect to db
             helper.close();
