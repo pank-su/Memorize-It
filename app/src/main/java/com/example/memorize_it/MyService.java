@@ -144,10 +144,8 @@ class PrimeThread extends Thread {
                 // Это надо исправлять, но пока это лучший выход
                 for (Pair<Date, Integer> pair:dates) {
                     if (date_now.compareTo(pair.first) == 0) {
-                        System.out.println("shit");
                         this.service.notif(pair.second);
                         set_dates();
-                        break;
                     }
                 }
                 date_now = new Date();

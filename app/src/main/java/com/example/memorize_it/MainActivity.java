@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,10 +23,17 @@ public class MainActivity extends AppCompatActivity {
     String TAG = "HO-HO-HO";
     DBHelper helper;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EditText editText = (EditText) findViewById(R.id.my_time);
+        editText.setFocusable(false);
+        editText.setFocusableInTouchMode(false);
+        editText.setClickable(false);
+        editText.setLongClickable(false);
+        editText.setCursorVisible(false);
         createNotificationChannel();
         helper = new DBHelper(this);
 
