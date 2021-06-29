@@ -28,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
         EditText editText = (EditText) findViewById(R.id.my_time);
+        editText.setOnClickListener(v -> showTimePickerDialog(v));
         editText.setFocusable(false);
         editText.setFocusableInTouchMode(false);
-        editText.setClickable(false);
+        // editText.setClickable(false);
         editText.setLongClickable(false);
         editText.setCursorVisible(false);
         createNotificationChannel();
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         } else{
             Toast.makeText(this, "Введите дату", Toast.LENGTH_LONG).show();
         }
+
 
 
     }
