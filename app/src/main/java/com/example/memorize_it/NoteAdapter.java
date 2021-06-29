@@ -10,7 +10,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 public class NoteAdapter extends BaseAdapter {
     Context ctx;

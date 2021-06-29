@@ -1,5 +1,6 @@
 package com.example.memorize_it;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
@@ -12,16 +13,14 @@ import android.util.Pair;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import java.io.Console;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 public class MyService extends Service {
-    String TAG = "HO-HO-HO";
+    // String TAG = "HO-HO-HO";
     public static final String CHANNEL_ID = "2";
     PrimeThread p;
     ContentValues cv;
@@ -120,6 +119,7 @@ class PrimeThread extends Thread {
 
     MyService service;
     List<Pair<Date, Integer>> dates = new ArrayList();
+    @SuppressLint("SimpleDateFormat")
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
     public PrimeThread(MyService service){
@@ -141,7 +141,7 @@ class PrimeThread extends Thread {
                 boolean modif = false;
                 // Это надо исправлять, но пока это лучший выход
                 for (Pair<Date, Integer> pair:dates) {
-                    if (date_now.compareTo(pair.first) == 0) {
+                    if (date_now != null && date_now.compareTo(pair.first) == 0) {
                         this.service.notif(pair.second);
                         // set_dates();
                         modif = true;
@@ -162,7 +162,7 @@ class PrimeThread extends Thread {
         DBHelper helper = new DBHelper(this.service);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query("Notes", null, null, null, null, null, null);
-        long min_dif = Long.MAX_VALUE;
+        // long min_dif = Long.MAX_VALUE;
         for (int i = 0; i < c.getCount(); i++) {
             c.moveToPosition(i);
             if (c.getInt(c.getColumnIndex("runned")) == 1){

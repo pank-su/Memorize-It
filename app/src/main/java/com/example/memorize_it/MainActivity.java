@@ -9,10 +9,8 @@ import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,7 +18,7 @@ import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
-    String TAG = "HO-HO-HO";
+    // String TAG = "HO-HO-HO";
     DBHelper helper;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -28,9 +26,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
-        EditText editText = (EditText) findViewById(R.id.my_time);
-        editText.setOnClickListener(v -> showTimePickerDialog(v));
+        // getSupportActionBar().hide();
+        EditText editText = findViewById(R.id.my_time);
+        editText.setOnClickListener(this::showTimePickerDialog);
         editText.setFocusable(false);
         editText.setFocusableInTouchMode(false);
         // editText.setClickable(false);

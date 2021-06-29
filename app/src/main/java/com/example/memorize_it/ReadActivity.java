@@ -9,16 +9,14 @@ import android.util.Log;
 
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import android.widget.ListView;
 
 
 import java.util.ArrayList;
 
 public class ReadActivity extends AppCompatActivity {
     String TAG = "HO-HO-HO";
-    ArrayList<Note> notes = new ArrayList<Note>();
+    ArrayList<Note> notes = new ArrayList<>();
     NoteAdapter adapter;
 
     @Override
@@ -30,7 +28,7 @@ public class ReadActivity extends AppCompatActivity {
         fillData();
         adapter = new NoteAdapter(this, notes);
 
-        ListView list = (ListView) findViewById(R.id.List_of_notes);
+        ListView list = findViewById(R.id.List_of_notes);
         list.setAdapter(adapter);
     }
 
@@ -57,7 +55,7 @@ public class ReadActivity extends AppCompatActivity {
             try {
                 annot = annot.substring(0, 20);
             } catch (Exception e){
-
+                e.printStackTrace();
             }
 
             Note n = new Note(name, annot, time, runned);
