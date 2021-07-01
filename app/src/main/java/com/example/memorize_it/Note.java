@@ -5,11 +5,13 @@ public class Note {
     String annotation;
     String date;
     byte runned;
+    int id;
 
-    Note(String name, String annotation, String date, int runned){
+    Note(String name, String annotation, String date, int runned, int id){
         this.name = name;
         this.annotation = annotation;
         this.date = date;
         this.runned = (byte) runned;
+        this.id = id;
     }
 }

@@ -20,6 +20,8 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     // String TAG = "HO-HO-HO";
     DBHelper helper;
+    boolean edit;
+    int id;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -35,6 +37,14 @@ public class MainActivity extends AppCompatActivity {
         editText.setLongClickable(false);
         editText.setCursorVisible(false);
         createNotificationChannel();
+        Intent intent = getIntent();
+        edit = intent.getBooleanExtra("edit", false);
+        if (edit){
+            ((EditText) findViewById(R.id.name_text)).setText(intent.getStringExtra("name"));
+            ((EditText) findViewById(R.id.my_time)).setText(intent.getStringExtra("time"));
+            ((EditText) findViewById(R.id.message)).setText(intent.getStringExtra("message"));
+            id = intent.getIntExtra("id", 0);
+        }
         helper = new DBHelper(this);
 
 // notificationId is a unique int for each notification that you must define
@@ -80,20 +90,22 @@ public class MainActivity extends AppCompatActivity {
             cv.put("time", my_time.getText().toString());
             cv.put("message", message.getText().toString());
             cv.put("runned", 0);
-            db.insert("Notes", null, cv);
+            if (edit)
+                db.update("Notes", cv, "id = ?", new String[] {Integer.toString(id)});
+            else
+                db.insert("Notes", null, cv);
             //Close connect to db
             helper.close();
             db.close();
             startService(new Intent(this, MyService.class));
+            if (edit) {
+                Intent read = new Intent(this, ReadActivity.class);
+                startActivity(read);
+            }
             this.finish();
         } else{
             Toast.makeText(this, "Введите дату", Toast.LENGTH_LONG).show();
         }
-
-
-
     }
-
-
 }
 

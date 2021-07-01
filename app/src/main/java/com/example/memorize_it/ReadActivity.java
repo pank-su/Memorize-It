@@ -38,11 +38,11 @@ public class ReadActivity extends AppCompatActivity {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query("Notes", null, null, null, null, null, null);
         c.moveToFirst();
+        String annot, name, time;
+        int runned, id;
         do{
-            String annot, name, time;
-            int runned;
-
             try {
+                id = c.getInt(c.getColumnIndex("id"));
                 name = c.getString(c.getColumnIndex("name"));
                 time = c.getString(c.getColumnIndex("time"));
                 annot = c.getString(c.getColumnIndex("message"));
@@ -58,7 +58,7 @@ public class ReadActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Note n = new Note(name, annot, time, runned);
+            Note n = new Note(name, annot, time, runned, id);
             Log.i(TAG, name + " " + annot + " " + time);
             notes.add(n);
         }while (c.moveToNext());
