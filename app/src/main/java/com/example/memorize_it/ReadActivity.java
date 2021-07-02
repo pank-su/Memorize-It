@@ -2,6 +2,7 @@ package com.example.memorize_it;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -26,10 +27,14 @@ public class ReadActivity extends AppCompatActivity {
         Log.i(TAG, "Start");
         findViewById(R.id.i_havent_text).setVisibility(View.INVISIBLE);
         fillData();
-        adapter = new NoteAdapter(this, notes);
-
+        adapter = new NoteAdapter(this, notes, this);
         ListView list = findViewById(R.id.List_of_notes);
         list.setAdapter(adapter);
+    }
+
+
+    void zero_items(){
+        findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
     }
 
     void fillData() {
@@ -48,7 +53,7 @@ public class ReadActivity extends AppCompatActivity {
                 annot = c.getString(c.getColumnIndex("message"));
                 runned = c.getInt(c.getColumnIndex("runned"));
             } catch (Exception e){
-                findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
+                zero_items();
                 break;
             }
 
@@ -68,5 +73,9 @@ public class ReadActivity extends AppCompatActivity {
         c.close();
     }
 
-
+    public void create_note(View v){
+        Intent create = new Intent(this, MainActivity.class);
+        startActivity(create);
+        finish();
+    }
 }

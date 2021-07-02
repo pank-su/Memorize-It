@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class MyService extends Service {
     // String TAG = "HO-HO-HO";
@@ -35,7 +36,7 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            p.set_dates();
+            p.set_dates(false);
         } catch (Exception e){
             p = new PrimeThread(this);
             p.start();
@@ -87,7 +88,7 @@ public class MyService extends Service {
         intent.putExtra("name", title);
         intent.putExtra("message", text);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, UUID.randomUUID().hashCode(), intent, 0);
 
         //Creating notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -116,7 +117,8 @@ public class MyService extends Service {
 }
 
 class PrimeThread extends Thread {
-
+    boolean modif = false;
+    Date date_now;
     MyService service;
     List<Pair<Date, Integer>> dates = new ArrayList();
     @SuppressLint("SimpleDateFormat")
@@ -127,9 +129,7 @@ class PrimeThread extends Thread {
     }
 
     public void run(){
-        System.out.println("runned");
-        set_dates();
-        Date date_now;
+        set_dates(true);
         while (true){
             try {
                 date_now = new Date();
@@ -138,7 +138,7 @@ class PrimeThread extends Thread {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                boolean modif = false;
+
                 // Это надо исправлять, но пока это лучший выход
                 for (Pair<Date, Integer> pair:dates) {
                     if (date_now != null && date_now.compareTo(pair.first) == 0) {
@@ -148,7 +148,7 @@ class PrimeThread extends Thread {
                     }
                 }
                 if (modif)
-                    set_dates();
+                    set_dates(true);
                 date_now = new Date();
                 Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
@@ -158,7 +158,8 @@ class PrimeThread extends Thread {
         }
     }
 
-    public void set_dates(){
+    public void set_dates(boolean from_run){
+        System.out.println("runned");
         DBHelper helper = new DBHelper(this.service);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query("Notes", null, null, null, null, null, null);
@@ -175,6 +176,17 @@ class PrimeThread extends Thread {
                 e.printStackTrace();
             }
             dates.add(Pair.create(date, c.getInt(c.getColumnIndex("id"))));
+            if (!from_run){
+                date_now = new Date();
+                try {
+                    date_now = sdf.parse(sdf.format(date_now));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (date_now != null && date_now.compareTo(date) == 0){
+                    this.service.notif(c.getInt(c.getColumnIndex("id")));
+                }
+            }
         }
         c.close();
         helper.close();

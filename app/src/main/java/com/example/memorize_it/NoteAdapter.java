@@ -19,15 +19,15 @@ public class NoteAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inf;
     ArrayList<Note> notes;
+    ReadActivity readActivity;
 
-    NoteAdapter(Context context, ArrayList<Note> objects) {
+    NoteAdapter(Context context, ArrayList<Note> objects, ReadActivity readActivity) {
         ctx = context;
         notes = objects;
         inf = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.readActivity = readActivity;
     }
 
-    // @Override
-    //public void notifyDataSetChanged() {super.notifyDataSetChanged();}
 
     @Override
     public int getCount() {
@@ -80,6 +80,7 @@ public class NoteAdapter extends BaseAdapter {
                     .putExtra("time", ((TextView) v.findViewById(R.id.time_note)).getText())
                     .putExtra("message", ((TextView) v.findViewById(R.id.annotation)).getText());
             ctx.startActivity(intent);
+            readActivity.finish();
         }
     };
 
@@ -111,6 +112,8 @@ public class NoteAdapter extends BaseAdapter {
             }
             notes.remove(deleted);
             notifyDataSetChanged();
+            if (notes.size() == 0)
+                readActivity.zero_items();
         }
     };
 }

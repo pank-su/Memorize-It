@@ -17,14 +17,27 @@
         app:layout_constraintStart_toStartOf="@+id/List_of_notes"
         app:layout_constraintTop_toTopOf="@+id/List_of_notes" />
 
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="67dp"
+        android:layout_height="63dp"
+        android:background="@drawable/roundedbutton"
+        android:onClick="create_note"
+        app:icon="@android:drawable/ic_menu_edit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/List_of_notes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.935" />
+
     <ListView
         android:id="@+id/List_of_notes"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
     </ListView>
 
