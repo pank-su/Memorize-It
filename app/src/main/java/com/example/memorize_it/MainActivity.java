@@ -12,9 +12,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             id = intent.getIntExtra("id", 0);
         }
         helper = new DBHelper(this);
+        ((Spinner) findViewById(R.id.when_spinner)).setOnItemSelectedListener(onItemSelectedListener);
 
 // notificationId is a unique int for each notification that you must define
     }
@@ -72,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(newFragment.getDialog());
     }
     public void OnClicked(View v) {
-
         //Link text objects
         TextView my_time = findViewById(R.id.my_time);
         TextView name = findViewById(R.id.name_text);
@@ -88,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
         if (!my_time.getText().toString().isEmpty()) {
             cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
+            cv.put("type", "normal");
+            JSONObject json = new JSONObject();
+            cv.put("info", json.toString());
             cv.put("message", message.getText().toString());
             cv.put("runned", 0);
             if (edit)
@@ -107,5 +114,16 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Введите дату", Toast.LENGTH_LONG).show();
         }
     }
+    AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            System.out.println(((TextView) view).getText() + " " + position + " " + id);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
 }
 

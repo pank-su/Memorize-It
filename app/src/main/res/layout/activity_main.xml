@@ -48,7 +48,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="550dp"
+        android:layout_height="326dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp">
@@ -103,7 +103,7 @@
             </LinearLayout>
 
             <Spinner
-                android:id="@+id/spinner"
+                android:id="@+id/when_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:entries="@array/when_names" />

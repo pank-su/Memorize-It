@@ -13,6 +13,10 @@ import android.util.Pair;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
+            p.update_table();
             p.set_dates(false);
         } catch (Exception e){
             p = new PrimeThread(this);
@@ -129,6 +134,7 @@ class PrimeThread extends Thread {
     }
 
     public void run(){
+        update_table();
         set_dates(true);
         while (true){
             try {
@@ -158,24 +164,24 @@ class PrimeThread extends Thread {
         }
     }
 
-    public void set_dates(boolean from_run){
-        System.out.println("runned");
+    public void set_dates(boolean from_run) {
         DBHelper helper = new DBHelper(this.service);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor c = db.query("Notes", null, null, null, null, null, null);
+        Cursor c = db.query("working_notes", null, null, null, null, null, null);
         // long min_dif = Long.MAX_VALUE;
         for (int i = 0; i < c.getCount(); i++) {
             c.moveToPosition(i);
-            if (c.getInt(c.getColumnIndex("runned")) == 1){
-                continue;
-            }
             Date date = null;
             try {
-                date = sdf.parse(c.getString(c.getColumnIndex("time")));
-            } catch (ParseException e) {
+                JSONArray times = new JSONArray(c.getString(c.getColumnIndex("times")));
+                JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
+                // if (info.getString("type") == "normal")
+                date = sdf.parse(times.getString(0));
+            } catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }
-            dates.add(Pair.create(date, c.getInt(c.getColumnIndex("id"))));
+
+            dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
             if (!from_run){
                 date_now = new Date();
                 try {
@@ -184,13 +190,47 @@ class PrimeThread extends Thread {
                     e.printStackTrace();
                 }
                 if (date_now != null && date_now.compareTo(date) == 0){
-                    this.service.notif(c.getInt(c.getColumnIndex("id")));
+                    this.service.notif(c.getInt(c.getColumnIndex("note_id")));
                 }
             }
         }
         c.close();
         helper.close();
         db.close();
+    }
 
+
+    public void update_table(){
+        DBHelper helper = new DBHelper(this.service);
+        SQLiteDatabase db_notes = helper.getReadableDatabase();
+        Cursor c = db_notes.query("Notes", null, null, null, null, null, null);
+        SQLiteDatabase db_working_notes = helper.getWritableDatabase();
+        db_working_notes.delete("working_notes", "?", new String[] {"TRUE"});
+        for (int i = 0; i < c.getCount(); i++) {
+            c.moveToPosition(i);
+            if (c.getInt(c.getColumnIndex("runned")) == 1) {
+                continue;
+            }
+
+            JSONObject info = null;
+            String type = null;
+            try {
+                info = new JSONObject(c.getString(c.getColumnIndex("info")));
+                type = c.getString(c.getColumnIndex("type"));
+                info.put("type", type);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ContentValues cv = new ContentValues();
+            cv.put("note_id", c.getInt(c.getColumnIndex("id")));
+            cv.put("info", info.toString());
+            JSONArray jsonArray = new JSONArray().put(c.getString(c.getColumnIndex("time")));
+            cv.put("times", jsonArray.toString());
+            db_working_notes.insert("working_notes", null, cv);
+        }
+        c.close();
+        helper.close();
+        db_notes.close();
+        db_working_notes.close();
     }
 }
