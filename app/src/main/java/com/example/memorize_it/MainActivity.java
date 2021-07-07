@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,7 +23,6 @@ import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity {
-    // String TAG = "HO-HO-HO";
     DBHelper helper;
     boolean edit;
     int id;
@@ -117,7 +117,14 @@ public class MainActivity extends AppCompatActivity {
     AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            System.out.println(((TextView) view).getText() + " " + position + " " + id);
+            // String text = (String) ((TextView) view).getText();
+            findViewById(R.id.days_in_week).setVisibility(View.GONE);
+            switch (position){
+                case 0:
+                    break;
+                case 2:
+                    findViewById(R.id.days_in_week).setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
@@ -125,5 +132,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void OnClicked_day_in_week(View v){
+        Button button = (Button) v;
+        button.setSelected(!button.isSelected());
+    }
 }
 

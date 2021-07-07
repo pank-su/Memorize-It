@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="when_names">
+        <item>Один раз</item>
         <item>Ежедневно</item>
         <item>Еженедельно</item>
-        <item>Один раз</item>
-        <item>В опр. дату</item>
         <item>В опр. даты</item>
     </string-array>
 </resources>

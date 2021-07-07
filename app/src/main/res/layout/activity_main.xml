@@ -108,6 +108,76 @@
                 android:layout_height="wrap_content"
                 android:entries="@array/when_names" />
 
+            <LinearLayout
+                android:id="@+id/days_in_week"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/dw1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedbutton"
+                    android:onClick="OnClicked_day_in_week"
+                    android:text="Пн" />
+
+                <Button
+                    android:id="@+id/dw2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedbutton"
+                    android:onClick="OnClicked_day_in_week"
+                    android:text="Вт" />
+
+                <Button
+                    android:id="@+id/dw3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedbutton"
+                    android:onClick="OnClicked_day_in_week"
+                    android:text="СР" />
+
+                <Button
+                    android:id="@+id/dw4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedbutton"
+                    android:onClick="OnClicked_day_in_week"
+                    android:text="ЧТ" />
+
+                <Button
+                    android:id="@+id/dw5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedbutton"
+                    android:onClick="OnClicked_day_in_week"
+                    android:text="ПТ" />
+
+                <Button
+                    android:id="@+id/dw6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedbutton"
+                    android:onClick="OnClicked_day_in_week"
+                    android:text="СБ" />
+
+                <Button
+                    android:id="@+id/dw7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedbutton"
+                    android:onClick="OnClicked_day_in_week"
+                    android:text="ВС" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

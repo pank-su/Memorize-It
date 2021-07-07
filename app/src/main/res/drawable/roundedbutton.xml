@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_selected="false">
         <shape
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -8,4 +8,12 @@
             <solid android:color="?attr/colorButtonNormal"></solid>
         </shape>
     </item>
-</layer-list>
+    <item android:state_selected="true">
+        <shape
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <corners android:radius="50dp" />
+            <solid android:color="@color/green"></solid>
+        </shape>
+    </item>
+</selector>
