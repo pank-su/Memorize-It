@@ -15,6 +15,45 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/delete"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="41dp"
+        android:layout_height="37dp"
+        android:background="@android:drawable/ic_menu_close_clear_cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/switch1"
+        app:layout_constraintHorizontal_bias="0.058"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Name_note"
+        app:layout_constraintVertical_bias="0.492" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:showText="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.917"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Name_note"
+        app:layout_constraintVertical_bias="0.49"
+        tools:checked="false" />
+
+    <TextView
+        android:id="@+id/time_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/switch1"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toEndOf="@+id/annotation"
+        app:layout_constraintTop_toBottomOf="@+id/Name_note"
+        app:layout_constraintVertical_bias="0.486" />
+
     <TextView
         android:id="@+id/annotation"
         android:layout_width="wrap_content"
@@ -23,17 +62,9 @@
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.338"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Name_note" />
-
-    <TextView
-        android:id="@+id/time_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/annotation" />
+        app:layout_constraintTop_toBottomOf="@+id/Name_note"
+        app:layout_constraintVertical_bias="0.486" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

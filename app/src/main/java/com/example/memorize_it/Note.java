@@ -4,10 +4,14 @@ public class Note {
     String name;
     String annotation;
     String date;
+    byte runned;
+    int id;
 
-    Note(String _name, String _annotation, String _date){
-        name = _name;
-        annotation = _annotation;
-        date = _date;
+    Note(String name, String annotation, String date, int runned, int id){
+        this.name = name;
+        this.annotation = annotation;
+        this.date = date;
+        this.runned = (byte) runned;
+        this.id = id;
     }
 }

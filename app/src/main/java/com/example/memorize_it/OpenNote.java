@@ -13,9 +13,9 @@ public class OpenNote extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_note2);
         Intent intent = getIntent();
-        TextView name = (TextView) findViewById(R.id.name_note);
+        TextView name = findViewById(R.id.name_note);
         name.setText(intent.getStringExtra("name"));
-        TextView message = (TextView) findViewById(R.id.message_note);
+        TextView message = findViewById(R.id.message_note);
         message.setText(intent.getStringExtra("message"));
     }
 }

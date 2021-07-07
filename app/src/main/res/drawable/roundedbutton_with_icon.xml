@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <shape
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <corners android:radius="50dp" />
+            <solid android:color="?attr/colorButtonNormal"></solid>
+        </shape>
+    </item>
+    <item android:drawable="@android:drawable/ic_menu_edit"
+        android:bottom="10dp"
+        android:left="10dp"
+        android:right="10dp"
+        android:top="10dp"/>
+</layer-list>
