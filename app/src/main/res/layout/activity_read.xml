@@ -21,7 +21,7 @@
         android:id="@+id/button2"
         android:layout_width="67dp"
         android:layout_height="63dp"
-        android:background="@drawable/roundedbutton"
+        android:background="@drawable/roundedbutton_with_icon"
         android:onClick="create_note"
         app:icon="@android:drawable/ic_menu_edit"
         app:layout_constraintBottom_toBottomOf="parent"

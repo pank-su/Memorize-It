@@ -8,4 +8,9 @@
             <solid android:color="?attr/colorButtonNormal"></solid>
         </shape>
     </item>
+    <item android:drawable="@android:drawable/ic_menu_edit"
+        android:bottom="10dp"
+        android:left="10dp"
+        android:right="10dp"
+        android:top="10dp"/>
 </layer-list>
