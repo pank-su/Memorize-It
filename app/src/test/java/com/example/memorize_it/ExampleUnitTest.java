@@ -2,6 +2,8 @@ package com.example.memorize_it;
 
 import org.junit.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.Assert.*;
 
 /**
@@ -12,6 +14,7 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
+        LocalDate localDate = LocalDate.now();
+        assertEquals(3, localDate.getDayOfWeek().getValue() - 1);
     }
 }

@@ -7,9 +7,11 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Pair;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -19,6 +21,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +40,7 @@ public class MyService extends Service {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
@@ -133,6 +137,7 @@ class PrimeThread extends Thread {
         this.service = service;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void run(){
         update_table();
         set_dates(true);
@@ -200,6 +205,7 @@ class PrimeThread extends Thread {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void update_table(){
         DBHelper helper = new DBHelper(this.service);
         SQLiteDatabase db_notes = helper.getReadableDatabase();
@@ -211,15 +217,30 @@ class PrimeThread extends Thread {
             if (c.getInt(c.getColumnIndex("runned")) == 1) {
                 continue;
             }
-
             JSONObject info = null;
             String type = null;
+            boolean cont = false;
             try {
                 info = new JSONObject(c.getString(c.getColumnIndex("info")));
                 type = c.getString(c.getColumnIndex("type"));
+                switch (type){
+                    case "everyday":
+                        break;
+                    case "everyweek":
+                        JSONArray days_of_week = new JSONArray(info.getJSONArray("days of week"));
+                        LocalDate localDate = LocalDate.now();
+                        if (!(boolean) days_of_week.get(localDate.getDayOfWeek().getValue() - 1)){
+                            cont = true;
+                        }
+                        break;
+                }
                 info.put("type", type);
+
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+            if (cont){
+                continue;
             }
             ContentValues cv = new ContentValues();
             cv.put("note_id", c.getInt(c.getColumnIndex("id")));

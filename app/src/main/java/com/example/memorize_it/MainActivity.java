@@ -15,17 +15,23 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Field;
 
 
 public class MainActivity extends AppCompatActivity {
     DBHelper helper;
     boolean edit;
     int id;
+    int selected_item;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -93,8 +99,24 @@ public class MainActivity extends AppCompatActivity {
         if (!my_time.getText().toString().isEmpty()) {
             cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
-            cv.put("type", "normal");
+            if (selected_item == 2)
+                cv.put("type", "everyweek");
+            else if (selected_item == 1)
+                cv.put("type", "everyday");
             JSONObject json = new JSONObject();
+            if (selected_item == 2){
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.days_in_week);
+                JSONArray array = new JSONArray();
+                for (int i = 0; i < linearLayout.getChildCount(); i++){
+                    // System.out.println(((Button) linearLayout.getChildAt(i)).isSelected());
+                    array.put(((Button) linearLayout.getChildAt(i)).isSelected());
+                }
+                try {
+                    json.put("days of week", array);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
             cv.put("info", json.toString());
             cv.put("message", message.getText().toString());
             cv.put("runned", 0);
@@ -120,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             // String text = (String) ((TextView) view).getText();
             findViewById(R.id.days_in_week).setVisibility(View.GONE);
+            selected_item = position;
             switch (position){
                 case 0:
                     break;
