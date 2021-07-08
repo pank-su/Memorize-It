@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // getSupportActionBar().hide();
+
         EditText editText = findViewById(R.id.my_time);
         editText.setOnClickListener(this::showTimePickerDialog);
         editText.setFocusable(false);
