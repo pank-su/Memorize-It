@@ -86,14 +86,15 @@ public class MyService extends Service {
         //Connect to db
         DBHelper helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor c = db.query("working_notes", null, "id = ?", new String[] {Integer.toString(id)}, null, null, null);
+        Cursor c = db.query("working_notes", null, "note_id = ?", new String[] {Integer.toString(id)}, null, null, null);
         c.moveToPosition(0);
 
         String title = null;
         String text = null;
         try {
             JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
-            String type = info.getString("title");
+            System.out.println(c.getString(c.getColumnIndex("info")));
+            String type = info.getString("type");
             switch (type){
                 case "title&message":
                     title = info.getString("title");
@@ -262,6 +263,7 @@ class PrimeThread extends Thread {
                         break;
                 }
                 info.put("when_type", when_type);
+                info.put("type", c.getString(c.getColumnIndex("type")));
 
             } catch (JSONException e) {
                 e.printStackTrace();

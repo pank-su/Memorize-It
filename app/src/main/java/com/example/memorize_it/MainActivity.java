@@ -59,10 +59,6 @@ public class MainActivity extends AppCompatActivity {
         helper = new DBHelper(this);
         ((Spinner) findViewById(R.id.when_spinner)).setOnItemSelectedListener(onItemSelectedListener_days_in_week);
         ((Spinner) findViewById(R.id.type_spinner)).setOnItemSelectedListener(onItemSelectedListener_type);
-
-
-
-
 // notificationId is a unique int for each notification that you must define
     }
 
@@ -81,34 +77,16 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-    }/*if (selected_item == 2)
-                cv.put("type", "everyweek");
-            else if (selected_item == 1)
-                cv.put("type", "everyday");
-            JSONObject json = new JSONObject();
-            if (selected_item == 2){
-                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.days_in_week);
-                JSONArray array = new JSONArray();
-                for (int i = 0; i < linearLayout.getChildCount(); i++){
-                    // System.out.println(((Button) linearLayout.getChildAt(i)).isSelected());
-                    array.put(((Button) linearLayout.getChildAt(i)).isSelected());
-                }
-                try {
-                    json.put("days of week", array);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }*/
+    }
+
+
     public void showTimePickerDialog(View v) {
         DialogFragment newFragment = new TimePickerFragment(findViewById(R.id.my_time));
         newFragment.show(getSupportFragmentManager(), "timePicker");
         System.out.println(newFragment.getDialog());
     }
     public void OnClicked(View v) throws JSONException {
-        //Link text objects
         TextView my_time = findViewById(R.id.my_time);
-        TextView name = findViewById(R.id.name_text);
-        TextView message = findViewById(R.id.message);
 
         // Object for content
         ContentValues cv = new ContentValues();
@@ -143,25 +121,6 @@ public class MainActivity extends AppCompatActivity {
                     cv.put("when_type", "calendar_days");
                     break;
             }
-
-            /*if (selected_item == 2)
-                cv.put("type", "everyweek");
-            else if (selected_item == 1)
-                cv.put("type", "everyday");
-            JSONObject json = new JSONObject();
-            if (selected_item == 2){
-                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.days_in_week);
-                JSONArray array = new JSONArray();
-                for (int i = 0; i < linearLayout.getChildCount(); i++){
-                    // System.out.println(((Button) linearLayout.getChildAt(i)).isSelected());
-                    array.put(((Button) linearLayout.getChildAt(i)).isSelected());
-                }
-                try {
-                    json.put("days of week", array);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }*/
             switch (type){
                 case 0:
                     cv.put("type", "title&message");
@@ -174,23 +133,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 2:
                     cv.put("type", "question");
-                    json.put("question", ((EditText)findViewById(R.id.question_mess)));
-                    json.put("answer", ((EditText)findViewById(R.id.answer_mess)));
+                    json.put("question", ((EditText)findViewById(R.id.question_mess)).getText());
+                    json.put("answer", ((EditText)findViewById(R.id.answer_mess)).getText());
                     break;
             }
             cv.put("info", json.toString());
             // cv.put("message", message.getText().toString());
             cv.put("runned", 0);
 
-            String question_text;
-            if (((CheckBox)findViewById(R.id.quest)).isChecked()){
-                String question = ((TextView)findViewById(R.id.question_mess)).getText().toString();
-                String answer = ((TextView)findViewById(R.id.answer_mess)).getText().toString();
-                question_text = "{question:\""+question+"\""+", answer:\""+answer+"\"}";
-            } else{
-                question_text = "Not stated";
-            }
-            cv.put("question", question_text);
             if (edit)
                 db.update("Notes", cv, "id = ?", new String[] {Integer.toString(id)});
             else
@@ -223,9 +173,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
+        public void onNothingSelected(AdapterView<?> parent) {}
     };
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -263,9 +211,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
+        public void onNothingSelected(AdapterView<?> parent) {}
     };
 }
 
