@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     boolean edit;
     int id;
     int selected_item;
+    int type;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -56,7 +57,9 @@ public class MainActivity extends AppCompatActivity {
             id = intent.getIntExtra("id", 0);
         }
         helper = new DBHelper(this);
-        ((Spinner) findViewById(R.id.when_spinner)).setOnItemSelectedListener(onItemSelectedListener);
+        ((Spinner) findViewById(R.id.when_spinner)).setOnItemSelectedListener(onItemSelectedListener_days_in_week);
+        ((Spinner) findViewById(R.id.type_spinner)).setOnItemSelectedListener(onItemSelectedListener_type);
+
 
 
 
@@ -173,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Введите дату", Toast.LENGTH_LONG).show();
         }
     }
-    AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+    AdapterView.OnItemSelectedListener onItemSelectedListener_days_in_week = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             // String text = (String) ((TextView) view).getText();
@@ -199,13 +202,38 @@ public class MainActivity extends AppCompatActivity {
         button.setSelected(!button.isSelected());
     }
 
-    public void OnClickQwest(View v){
-        CheckBox checkbox = (CheckBox)v;
-        if (checkbox.isChecked()){
-            findViewById(R.id.Ask_answer).setVisibility(View.VISIBLE);
-        } else {
-            findViewById(R.id.Ask_answer).setVisibility(View.GONE);
+//    public void OnClickQwest(View v){
+//        CheckBox checkbox = (CheckBox)v;
+//        if (checkbox.isChecked()){
+//            findViewById(R.id.Ask_answer).setVisibility(View.VISIBLE);
+//        } else {
+//            findViewById(R.id.Ask_answer).setVisibility(View.GONE);
+//        }
+//    }
+    AdapterView.OnItemSelectedListener onItemSelectedListener_type = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            findViewById(R.id.Title_lay).setVisibility(View.GONE);
+            findViewById(R.id.message_lay).setVisibility(View.GONE);
+            findViewById(R.id.Ask_answer_lay).setVisibility(View.GONE);
+            type = position;
+            switch (position){
+                case 0:
+                    findViewById(R.id.Title_lay).setVisibility(View.VISIBLE);
+                    findViewById(R.id.message_lay).setVisibility(View.VISIBLE);
+                    break;
+                case 1:
+                    findViewById(R.id.Title_lay).setVisibility(View.VISIBLE);
+                    break;
+                case 2:
+                    findViewById(R.id.Ask_answer_lay).setVisibility(View.VISIBLE);
+            }
         }
-    }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
 }
 
