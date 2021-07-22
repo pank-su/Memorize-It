@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ListView;
 
 
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -48,12 +49,30 @@ public class ReadActivity extends AppCompatActivity {
         do{
             try {
                 id = c.getInt(c.getColumnIndex("id"));
-                name = c.getString(c.getColumnIndex("name"));
+                JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
+                switch (c.getString(c.getColumnIndex("type"))){
+                    case "title&message":
+                        name = info.getString("title");
+                        annot = info.getString("message");
+                        break;
+                    case "title":
+                        name = info.getString("title");
+                        annot = "";
+                        break;
+                    case "question":
+                        name = info.getString("question");
+                        annot = info.getString("answer");
+                        break;
+                    default:
+                        name = "";
+                        annot = "";
+                        break;
+                }
                 time = c.getString(c.getColumnIndex("time"));
-                annot = c.getString(c.getColumnIndex("message"));
                 runned = c.getInt(c.getColumnIndex("runned"));
             } catch (Exception e){
                 zero_items();
+                e.printStackTrace();
                 break;
             }
 

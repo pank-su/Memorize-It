@@ -31,6 +31,7 @@ public class MyService extends Service {
     public static final String CHANNEL_ID = "2";
     PrimeThread p;
     ContentValues cv;
+
     public MyService() {
     }
 
@@ -85,11 +86,31 @@ public class MyService extends Service {
         //Connect to db
         DBHelper helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor c = db.query("Notes", null, "id = ?", new String[] {Integer.toString(id)}, null, null, null);
-
+        Cursor c = db.query("working_notes", null, "note_id = ?", new String[] {Integer.toString(id)}, null, null, null);
         c.moveToPosition(0);
-        String title = c.getString(c.getColumnIndex("name"));
-        String text = c.getString(c.getColumnIndex("message"));
+
+        String title = null;
+        String text = null;
+        try {
+            JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
+            String type = info.getString("type");
+            switch (type){
+                case "title&message":
+                    title = info.getString("title");
+                    text = info.getString("message");
+                    break;
+                case "title":
+                    title = info.getString("title");
+                    text = "";
+                    break;
+                case "question":
+                    title = info.getString("question");
+                    text = info.getString("answer");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         //Creating notification
         Intent intent = new Intent(this, OpenNote.class);
@@ -124,11 +145,13 @@ public class MyService extends Service {
     }
 }
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 class PrimeThread extends Thread {
     boolean modif = false;
     Date date_now;
     MyService service;
     List<Pair<Date, Integer>> dates = new ArrayList();
+    int today =  LocalDate.now().getDayOfMonth();
     @SuppressLint("SimpleDateFormat")
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
@@ -140,7 +163,7 @@ class PrimeThread extends Thread {
     public void run(){
         update_table();
         set_dates(true);
-        while (true){
+        while (true) {
             try {
                 date_now = new Date();
                 try {
@@ -150,7 +173,7 @@ class PrimeThread extends Thread {
                 }
 
                 // Это надо исправлять, но пока это лучший выход
-                for (Pair<Date, Integer> pair:dates) {
+                for (Pair<Date, Integer> pair : dates) {
                     if (date_now != null && date_now.compareTo(pair.first) == 0) {
                         this.service.notif(pair.second);
                         // set_dates();
@@ -160,6 +183,12 @@ class PrimeThread extends Thread {
                 if (modif)
                     set_dates(true);
                 date_now = new Date();
+                int dayofmonth = LocalDate.now().getDayOfMonth();
+                if (dayofmonth != today) {
+                    update_table();
+                    today = dayofmonth;
+                }
+
                 Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -179,7 +208,6 @@ class PrimeThread extends Thread {
             try {
                 JSONArray times = new JSONArray(c.getString(c.getColumnIndex("times")));
                 JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
-                // if (info.getString("type") == "normal")
                 date = sdf.parse(times.getString(0));
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
@@ -217,12 +245,12 @@ class PrimeThread extends Thread {
                 continue;
             }
             JSONObject info = null;
-            String type = null;
+            String when_type;
             boolean cont = false;
             try {
                 info = new JSONObject(c.getString(c.getColumnIndex("info")));
-                type = c.getString(c.getColumnIndex("type"));
-                switch (type){
+                when_type = c.getString(c.getColumnIndex("when_type"));
+                switch (when_type){
                     case "everyday":
                         break;
                     case "everyweek":
@@ -233,7 +261,8 @@ class PrimeThread extends Thread {
                         }
                         break;
                 }
-                info.put("type", type);
+                info.put("when_type", when_type);
+                info.put("type", c.getString(c.getColumnIndex("type")));
 
             } catch (JSONException e) {
                 e.printStackTrace();
