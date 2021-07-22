@@ -93,7 +93,6 @@ public class MyService extends Service {
         String text = null;
         try {
             JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
-            System.out.println(c.getString(c.getColumnIndex("info")));
             String type = info.getString("type");
             switch (type){
                 case "title&message":
