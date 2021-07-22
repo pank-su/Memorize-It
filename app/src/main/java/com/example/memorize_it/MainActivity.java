@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     boolean edit;
     int id;
     int selected_item;
-    int type;
+    int type = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -81,7 +81,24 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-    }
+    }/*if (selected_item == 2)
+                cv.put("type", "everyweek");
+            else if (selected_item == 1)
+                cv.put("type", "everyday");
+            JSONObject json = new JSONObject();
+            if (selected_item == 2){
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.days_in_week);
+                JSONArray array = new JSONArray();
+                for (int i = 0; i < linearLayout.getChildCount(); i++){
+                    // System.out.println(((Button) linearLayout.getChildAt(i)).isSelected());
+                    array.put(((Button) linearLayout.getChildAt(i)).isSelected());
+                }
+                try {
+                    json.put("days of week", array);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }*/
     public void showTimePickerDialog(View v) {
         DialogFragment newFragment = new TimePickerFragment(findViewById(R.id.my_time));
         newFragment.show(getSupportFragmentManager(), "timePicker");
@@ -101,19 +118,19 @@ public class MainActivity extends AppCompatActivity {
 
         //Inserting content
         if (!my_time.getText().toString().isEmpty()) {
-            cv.put("name", name.getText().toString());
+            // cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
             JSONObject json = new JSONObject();
             System.out.println(selected_item);
             switch (selected_item){
                 case 0:
-                    cv.put("type", "one_time");
+                    cv.put("when_type", "one_time");
                     break;
                 case 1:
-                    cv.put("type", "everyday");
+                    cv.put("when_type", "everyday");
                     break;
                 case 2:
-                    cv.put("type", "everyweek");
+                    cv.put("when_type", "everyweek");
                     LinearLayout LineLayWeek = (LinearLayout) findViewById(R.id.days_in_week);
                     JSONArray array = new JSONArray();
                     for (int i = 0; i < LineLayWeek.getChildCount(); i++) {
@@ -123,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     json.put("days of week", array);
                     break;
                 case 3:
-                    cv.put("type", "calendar_days");
+                    cv.put("when_type", "calendar_days");
                     break;
             }
 
@@ -145,9 +162,24 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }*/
-
+            switch (type){
+                case 0:
+                    cv.put("type", "title&message");
+                    json.put("title", ((EditText)findViewById(R.id.name_text)).getText());
+                    json.put("message", ((EditText)findViewById(R.id.message)).getText());
+                    break;
+                case 1:
+                    cv.put("type", "title");
+                    json.put("title", ((EditText)findViewById(R.id.name_text)).getText());
+                    break;
+                case 2:
+                    cv.put("type", "question");
+                    json.put("question", ((EditText)findViewById(R.id.question_mess)));
+                    json.put("answer", ((EditText)findViewById(R.id.answer_mess)));
+                    break;
+            }
             cv.put("info", json.toString());
-            cv.put("message", message.getText().toString());
+            // cv.put("message", message.getText().toString());
             cv.put("runned", 0);
 
             String question_text;
