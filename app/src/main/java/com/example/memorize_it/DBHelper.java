@@ -15,8 +15,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        //Василий, в sql есть тлько TEXT
         Log.i("HO-HO-HO", "Create table");
-        db.execSQL("Create table Notes(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, type string, info TEXT, name string, time string, message string, runned BOOLEAN)"); // info is json
+        db.execSQL("Create table Notes(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, type TEXT, info TEXT, name TEXT, time TEXT, message TEXT, runned BOOLEAN, question TEXT)"); // info and question are json
         db.execSQL("Create table working_notes(note_id INTEGER, times TEXT, info TEXT, FOREIGN KEY (note_id) REFERENCES Notes(id))"); // times and info are json
     }
 

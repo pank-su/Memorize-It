@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class MyService extends Service {
-    // String TAG = "HO-HO-HO";
     public static final String CHANNEL_ID = "2";
     PrimeThread p;
     ContentValues cv;

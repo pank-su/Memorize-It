@@ -19,12 +19,11 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CheckBox;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.Field;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -59,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         helper = new DBHelper(this);
         ((Spinner) findViewById(R.id.when_spinner)).setOnItemSelectedListener(onItemSelectedListener);
 
+
+
 // notificationId is a unique int for each notification that you must define
     }
 
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         newFragment.show(getSupportFragmentManager(), "timePicker");
         System.out.println(newFragment.getDialog());
     }
-    public void OnClicked(View v) {
+    public void OnClicked(View v) throws JSONException {
         //Link text objects
         TextView my_time = findViewById(R.id.my_time);
         TextView name = findViewById(R.id.name_text);
@@ -99,7 +100,31 @@ public class MainActivity extends AppCompatActivity {
         if (!my_time.getText().toString().isEmpty()) {
             cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
-            if (selected_item == 2)
+            JSONObject json = new JSONObject();
+            System.out.println(selected_item);
+            switch (selected_item){
+                case 0:
+                    cv.put("type", "one_time");
+                    break;
+                case 1:
+                    cv.put("type", "everyday");
+                    break;
+                case 2:
+                    cv.put("type", "everyweek");
+                    LinearLayout LineLayWeek = (LinearLayout) findViewById(R.id.days_in_week);
+                    JSONArray array = new JSONArray();
+                    for (int i = 0; i < LineLayWeek.getChildCount(); i++) {
+                        // System.out.println(((Button) linearLayout.getChildAt(i)).isSelected());
+                        array.put(((Button) LineLayWeek.getChildAt(i)).isSelected());
+                    }
+                    json.put("days of week", array);
+                    break;
+                case 3:
+                    cv.put("type", "calendar_days");
+                    break;
+            }
+
+            /*if (selected_item == 2)
                 cv.put("type", "everyweek");
             else if (selected_item == 1)
                 cv.put("type", "everyday");
@@ -116,10 +141,21 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
+
             cv.put("info", json.toString());
             cv.put("message", message.getText().toString());
             cv.put("runned", 0);
+
+            String question_text;
+            if (((CheckBox)findViewById(R.id.quest)).isChecked()){
+                String question = ((TextView)findViewById(R.id.question_mess)).getText().toString();
+                String answer = ((TextView)findViewById(R.id.answer_mess)).getText().toString();
+                question_text = "{question:\""+question+"\""+", answer:\""+answer+"\"}";
+            } else{
+                question_text = "Not stated";
+            }
+            cv.put("question", question_text);
             if (edit)
                 db.update("Notes", cv, "id = ?", new String[] {Integer.toString(id)});
             else
@@ -161,6 +197,15 @@ public class MainActivity extends AppCompatActivity {
     public void OnClicked_day_in_week(View v){
         Button button = (Button) v;
         button.setSelected(!button.isSelected());
+    }
+
+    public void OnClickQwest(View v){
+        CheckBox checkbox = (CheckBox)v;
+        if (checkbox.isChecked()){
+            findViewById(R.id.Ask_answer).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.Ask_answer).setVisibility(View.GONE);
+        }
     }
 }
 
