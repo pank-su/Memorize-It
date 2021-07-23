@@ -3,8 +3,11 @@
     <item
         android:enabled="true"
         android:title="Selection mode"
-        android:checkable="true"></item>
+        android:checkable="true"
+        android:id="@+id/selection"></item>
     <item
-        android:title="write array">
+        android:title="Delete"
+        android:enabled="false"
+        android:id="@+id/delete_menu">
     </item>
 </menu>

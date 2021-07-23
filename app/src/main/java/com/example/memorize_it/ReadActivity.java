@@ -1,11 +1,13 @@
 package com.example.memorize_it;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -49,12 +51,27 @@ public class ReadActivity extends AppCompatActivity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        System.out.println(item.getItemId());
-//        if (item.getItemId() == 0){
-//            System.out.println(selected_ids);
-//        }
+        switch (item.getItemId()){
+            case R.id.selection:
+                selection_mode = !selection_mode;
+                change_selection_mode();
+                break;
+            case R.id.delete_menu:
+                DBHelper helper = new DBHelper(getApplicationContext());
+                SQLiteDatabase db = helper.getWritableDatabase();
+                for (int id: selected_ids) {
+                    db.delete("Notes", "id = ?", new String[] {Integer.toString((int) id)});
+                    adapter.notes.removeIf(note -> note.id == (int) id);
+                }
+                if (adapter.notes.size() == 0){
+                    findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
+                }
+                adapter.notifyDataSetChanged();
+                break;
+        }
         return true;
     }
 
@@ -126,6 +143,7 @@ public class ReadActivity extends AppCompatActivity {
         menu.getItem(0).setChecked(selection_mode);
         adapter.selection_mode = selection_mode;
         adapter.notifyDataSetChanged();
+        menu.getItem(1).setEnabled(selection_mode);
         selected_ids.clear();
     }
 
