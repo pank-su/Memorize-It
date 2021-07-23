@@ -1,5 +1,6 @@
 package com.example.memorize_it;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,8 +10,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
 
 
 import org.json.JSONObject;
@@ -23,6 +28,7 @@ public class ReadActivity extends AppCompatActivity {
     NoteAdapter adapter;
     boolean selection_mode = false;
     Menu menu;
+    ArrayList<Integer> selected_ids = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,15 @@ public class ReadActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.read_menu, menu);
         this.menu = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        System.out.println(item.getItemId());
+//        if (item.getItemId() == 0){
+//            System.out.println(selected_ids);
+//        }
         return true;
     }
 
@@ -111,6 +126,7 @@ public class ReadActivity extends AppCompatActivity {
         menu.getItem(0).setChecked(selection_mode);
         adapter.selection_mode = selection_mode;
         adapter.notifyDataSetChanged();
+        selected_ids.clear();
     }
 
     View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
@@ -118,7 +134,24 @@ public class ReadActivity extends AppCompatActivity {
         public boolean onLongClick(View v) {
             selection_mode = !selection_mode;
             change_selection_mode();
+            if (selection_mode)
+                ((CheckBox) v.findViewById(R.id.selection_button)).setChecked(true);
             return true;
+        }
+    };
+
+    CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton v, boolean isChecked) {
+            if (isChecked)
+                selected_ids.add((Integer) v.getTag());
+            else {
+                selected_ids.remove(selected_ids.indexOf((Integer) v.getTag()));
+                if (selected_ids.size() == 0){
+                    selection_mode = false;
+                    change_selection_mode();
+                }
+            }
         }
     };
 }

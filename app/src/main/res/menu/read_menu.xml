@@ -4,4 +4,7 @@
         android:enabled="true"
         android:title="Selection mode"
         android:checkable="true"></item>
+    <item
+        android:title="write array">
+    </item>
 </menu>

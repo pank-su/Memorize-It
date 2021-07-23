@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -71,11 +72,14 @@ public class NoteAdapter extends BaseAdapter {
         view.setLongClickable(true);
         view.setOnLongClickListener(readActivity.onLongClickListener);
         view.findViewById(R.id.delete).setVisibility(View.GONE);
-        view.findViewById(R.id.selection_button).setVisibility(View.GONE);
-
+        CheckBox sel_btn = (CheckBox) view.findViewById(R.id.selection_button);
+        sel_btn.setVisibility(View.GONE);
+        sel_btn.setTag(n.id);
+        sel_btn.setOnCheckedChangeListener(readActivity.onCheckedChangeListener);
         if (selection_mode){
-            view.findViewById(R.id.selection_button).setVisibility(View.VISIBLE);
+            sel_btn.setVisibility(View.VISIBLE);
         } else {
+            sel_btn.setChecked(false);
             view.findViewById(R.id.delete).setVisibility(View.VISIBLE);
         }
         return view;
@@ -84,6 +88,11 @@ public class NoteAdapter extends BaseAdapter {
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (selection_mode){
+                CheckBox checkBox = (CheckBox) v.findViewById(R.id.selection_button);
+                checkBox.setChecked(!checkBox.isChecked());
+                return;
+            }
             Intent intent = new Intent(ctx, MainActivity.class);
             intent.putExtra("name", ((TextView) v.findViewById(R.id.Name_note)).getText())
                     .putExtra("edit", true)
