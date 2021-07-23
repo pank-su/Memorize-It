@@ -20,6 +20,7 @@ public class NoteAdapter extends BaseAdapter {
     LayoutInflater inf;
     ArrayList<Note> notes;
     ReadActivity readActivity;
+    boolean selection_mode = false;
 
     NoteAdapter(Context context, ArrayList<Note> objects, ReadActivity readActivity) {
         ctx = context;
@@ -67,6 +68,16 @@ public class NoteAdapter extends BaseAdapter {
         btn.setOnClickListener(onClickListener_btn);
         view.setTag(n.id);
         view.setOnClickListener(onClickListener);
+        view.setLongClickable(true);
+        view.setOnLongClickListener(readActivity.onLongClickListener);
+        view.findViewById(R.id.delete).setVisibility(View.GONE);
+        view.findViewById(R.id.selection_button).setVisibility(View.GONE);
+
+        if (selection_mode){
+            view.findViewById(R.id.selection_button).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.delete).setVisibility(View.VISIBLE);
+        }
         return view;
     }
 

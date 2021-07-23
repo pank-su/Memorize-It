@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
 
@@ -20,6 +21,8 @@ public class ReadActivity extends AppCompatActivity {
     String TAG = "HO-HO-HO";
     ArrayList<Note> notes = new ArrayList<>();
     NoteAdapter adapter;
+    boolean selection_mode = false;
+    Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,12 @@ public class ReadActivity extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.read_menu, menu);
+        this.menu = menu;
+        return true;
+    }
 
     void zero_items(){
         findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
@@ -97,4 +106,19 @@ public class ReadActivity extends AppCompatActivity {
         startActivity(create);
         finish();
     }
+
+    public void change_selection_mode(){
+        menu.getItem(0).setChecked(selection_mode);
+        adapter.selection_mode = selection_mode;
+        adapter.notifyDataSetChanged();
+    }
+
+    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            selection_mode = !selection_mode;
+            change_selection_mode();
+            return true;
+        }
+    };
 }
