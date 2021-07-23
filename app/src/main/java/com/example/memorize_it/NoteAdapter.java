@@ -4,14 +4,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 
@@ -20,6 +24,7 @@ public class NoteAdapter extends BaseAdapter {
     LayoutInflater inf;
     ArrayList<Note> notes;
     ReadActivity readActivity;
+    boolean selection_mode = false;
 
     NoteAdapter(Context context, ArrayList<Note> objects, ReadActivity readActivity) {
         ctx = context;
@@ -67,12 +72,30 @@ public class NoteAdapter extends BaseAdapter {
         btn.setOnClickListener(onClickListener_btn);
         view.setTag(n.id);
         view.setOnClickListener(onClickListener);
+        view.setLongClickable(true);
+        view.setOnLongClickListener(readActivity.onLongClickListener);
+        view.findViewById(R.id.delete).setVisibility(View.GONE);
+        CheckBox sel_btn = (CheckBox) view.findViewById(R.id.selection_button);
+        sel_btn.setVisibility(View.GONE);
+        sel_btn.setTag(n.id);
+        sel_btn.setOnCheckedChangeListener(readActivity.onCheckedChangeListener);
+        if (selection_mode){
+            sel_btn.setVisibility(View.VISIBLE);
+        } else {
+            sel_btn.setChecked(false);
+            view.findViewById(R.id.delete).setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (selection_mode){
+                CheckBox checkBox = (CheckBox) v.findViewById(R.id.selection_button);
+                checkBox.setChecked(!checkBox.isChecked());
+                return;
+            }
             Intent intent = new Intent(ctx, MainActivity.class);
             intent.putExtra("name", ((TextView) v.findViewById(R.id.Name_note)).getText())
                     .putExtra("edit", true)
@@ -98,19 +121,13 @@ public class NoteAdapter extends BaseAdapter {
     };
 
     View.OnClickListener onClickListener_btn = new View.OnClickListener() {
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onClick(View v) {
             DBHelper helper = new DBHelper(ctx);
             SQLiteDatabase db = helper.getWritableDatabase();
             db.delete("Notes", "id = ?", new String[] {Integer.toString((int) v.getTag())});
-            int deleted = 0;
-            for (int i = 0; i <= notes.size(); i++){
-                if (notes.get(i).id == (int) v.getTag()){
-                    deleted = i;
-                    break;
-                }
-            }
-            notes.remove(deleted);
+            notes.removeIf(note -> note.id == (int) v.getTag());
             notifyDataSetChanged();
             if (notes.size() == 0)
                 readActivity.zero_items();

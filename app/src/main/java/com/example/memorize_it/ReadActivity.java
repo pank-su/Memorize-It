@@ -1,15 +1,23 @@
 package com.example.memorize_it;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
 
 
 import org.json.JSONObject;
@@ -20,6 +28,9 @@ public class ReadActivity extends AppCompatActivity {
     String TAG = "HO-HO-HO";
     ArrayList<Note> notes = new ArrayList<>();
     NoteAdapter adapter;
+    boolean selection_mode = false;
+    Menu menu;
+    ArrayList<Integer> selected_ids = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +44,36 @@ public class ReadActivity extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.read_menu, menu);
+        this.menu = menu;
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.selection:
+                selection_mode = !selection_mode;
+                change_selection_mode();
+                break;
+            case R.id.delete_menu:
+                DBHelper helper = new DBHelper(getApplicationContext());
+                SQLiteDatabase db = helper.getWritableDatabase();
+                for (int id: selected_ids) {
+                    db.delete("Notes", "id = ?", new String[] {Integer.toString((int) id)});
+                    adapter.notes.removeIf(note -> note.id == (int) id);
+                }
+                if (adapter.notes.size() == 0){
+                    findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
+                }
+                adapter.notifyDataSetChanged();
+                break;
+        }
+        return true;
+    }
 
     void zero_items(){
         findViewById(R.id.i_havent_text).setVisibility(View.VISIBLE);
@@ -97,4 +138,38 @@ public class ReadActivity extends AppCompatActivity {
         startActivity(create);
         finish();
     }
+
+    public void change_selection_mode(){
+        menu.getItem(0).setChecked(selection_mode);
+        adapter.selection_mode = selection_mode;
+        adapter.notifyDataSetChanged();
+        menu.getItem(1).setEnabled(selection_mode);
+        selected_ids.clear();
+    }
+
+    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            selection_mode = !selection_mode;
+            change_selection_mode();
+            if (selection_mode)
+                ((CheckBox) v.findViewById(R.id.selection_button)).setChecked(true);
+            return true;
+        }
+    };
+
+    CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton v, boolean isChecked) {
+            if (isChecked)
+                selected_ids.add((Integer) v.getTag());
+            else {
+                selected_ids.remove(selected_ids.indexOf((Integer) v.getTag()));
+                if (selected_ids.size() == 0){
+                    selection_mode = false;
+                    change_selection_mode();
+                }
+            }
+        }
+    };
 }
