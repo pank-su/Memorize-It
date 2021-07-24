@@ -138,7 +138,8 @@ public class MyService extends Service {
         cv = new ContentValues();
         cv.put("runned", 1);
         // db.delete("Notes", "id = ?", new String[] {id_in_table});
-        db.update("Notes", cv, "id = ?", new String[] {Integer.toString(id)});
+        db.update("Notes", cv, "id = ?", new String[]{Integer.toString(id)});
+        db.delete("working_notes", "note_id = ?", new String[]{Integer.toString(id)});
         db.close();
         helper.close();
 
@@ -253,21 +254,21 @@ class PrimeThread extends Thread {
                     case "everyday":
                         break;
                     case "everyweek":
-                        JSONArray days_of_week = new JSONArray(info.getJSONArray("days of week"));
+                        JSONArray days_of_week = info.getJSONArray("days of week");
                         LocalDate localDate = LocalDate.now();
-                        if (!(boolean) days_of_week.get(localDate.getDayOfWeek().getValue() - 1)){
+                        if (!(boolean) days_of_week.get(localDate.getDayOfWeek().getValue() - 1)) {
                             cont = true;
                         }
                         break;
+                }
+                if (cont) {
+                    continue;
                 }
                 info.put("when_type", when_type);
                 info.put("type", c.getString(c.getColumnIndex("type")));
 
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
-            if (cont){
-                continue;
             }
             ContentValues cv = new ContentValues();
             cv.put("note_id", c.getInt(c.getColumnIndex("id")));

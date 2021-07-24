@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 switch (selected_item) {
                     case 2:
-                        JSONArray array = new JSONArray(info.getString("days of week"));
+                        JSONArray array = info.getJSONArray("days of week");
                         LinearLayout LineLayWeek = ((LinearLayout) findViewById(R.id.days_in_week));
                         for (int i = 0; i < LineLayWeek.getChildCount(); i++) {
                             ((Button) LineLayWeek.getChildAt(i)).setSelected((boolean) array.get(i));
