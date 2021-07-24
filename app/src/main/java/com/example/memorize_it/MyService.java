@@ -186,9 +186,9 @@ class PrimeThread extends Thread {
                 int dayofmonth = LocalDate.now().getDayOfMonth();
                 if (dayofmonth != today) {
                     update_table();
+                    set_dates(true);
                     today = dayofmonth;
                 }
-
                 Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -201,7 +201,6 @@ class PrimeThread extends Thread {
         DBHelper helper = new DBHelper(this.service);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query("working_notes", null, null, null, null, null, null);
-        // long min_dif = Long.MAX_VALUE;
         for (int i = 0; i < c.getCount(); i++) {
             c.moveToPosition(i);
             Date date = null;

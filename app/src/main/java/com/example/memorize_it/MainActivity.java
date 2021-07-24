@@ -1,13 +1,11 @@
 package com.example.memorize_it;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,47 +17,94 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.CheckBox;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
     DBHelper helper;
     boolean edit;
     int id;
-    int selected_item;
+    int selected_item = 0;
     int type = 0;
+    String[] types;
+    String[] when_types;
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // getSupportActionBar().hide();
-
+        types = getResources().getStringArray(R.array.dbTypes);
+        when_types = getResources().getStringArray(R.array.dbWhenTypes);
+        Date date_now = new Date();
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         EditText editText = findViewById(R.id.my_time);
+        if (!edit)
+            editText.setText(sdf.format(date_now));
         editText.setOnClickListener(this::showTimePickerDialog);
         editText.setFocusable(false);
         editText.setFocusableInTouchMode(false);
-        // editText.setClickable(false);
         editText.setLongClickable(false);
         editText.setCursorVisible(false);
         createNotificationChannel();
         Intent intent = getIntent();
         edit = intent.getBooleanExtra("edit", false);
-        if (edit){
-            ((EditText) findViewById(R.id.name_text)).setText(intent.getStringExtra("name"));
-            ((EditText) findViewById(R.id.my_time)).setText(intent.getStringExtra("time"));
-            ((EditText) findViewById(R.id.message)).setText(intent.getStringExtra("message"));
-            id = intent.getIntExtra("id", 0);
-        }
         helper = new DBHelper(this);
+        Cursor c;
+        if (edit) {
+            SQLiteDatabase db = helper.getReadableDatabase();
+            id = intent.getIntExtra("id", 0);
+            c = db.query("Notes", null, "id = ?", new String[]{Integer.toString(id)}, null, null, null);
+            c.moveToPosition(0);
+            type = Arrays.asList(types).indexOf(c.getString(c.getColumnIndex("type")));
+            System.out.println(Arrays.asList(when_types));
+            selected_item = Arrays.asList(when_types).indexOf(c.getString(c.getColumnIndex("when_type")));
+            try {
+                JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
+                switch (type) {
+                    case 0:
+                        ((TextView) findViewById(R.id.name_text)).setText((String) info.get("title"));
+                        ((TextView) findViewById(R.id.message)).setText((String) info.get("message"));
+                        break;
+                    case 1:
+                        ((TextView) findViewById(R.id.name_text)).setText((String) info.get("title"));
+                        break;
+                    case 2:
+                        ((TextView) findViewById(R.id.question_mess)).setText((String) info.get("question"));
+                        ((TextView) findViewById(R.id.answer_mess)).setText((String) info.get("answer"));
+                        break;
+                }
+                switch (selected_item) {
+                    case 2:
+                        JSONArray array = new JSONArray(info.getString("days of week"));
+                        LinearLayout LineLayWeek = ((LinearLayout) findViewById(R.id.days_in_week));
+                        for (int i = 0; i < LineLayWeek.getChildCount(); i++) {
+                            ((Button) LineLayWeek.getChildAt(i)).setSelected((boolean) array.get(i));
+                        }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            c.close();
+            db.close();
+        }
         ((Spinner) findViewById(R.id.when_spinner)).setOnItemSelectedListener(onItemSelectedListener_days_in_week);
         ((Spinner) findViewById(R.id.type_spinner)).setOnItemSelectedListener(onItemSelectedListener_type);
-// notificationId is a unique int for each notification that you must define
+        ((Spinner) findViewById(R.id.type_spinner)).setSelection(type);
+        ((Spinner) findViewById(R.id.when_spinner)).setSelection(selected_item);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -96,49 +141,41 @@ public class MainActivity extends AppCompatActivity {
 
         //Inserting content
         if (!my_time.getText().toString().isEmpty()) {
-            // cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
             JSONObject json = new JSONObject();
             System.out.println(selected_item);
+            cv.put("when_type", when_types[selected_item]);
             switch (selected_item){
                 case 0:
-                    cv.put("when_type", "one_time");
                     break;
                 case 1:
-                    cv.put("when_type", "everyday");
                     break;
                 case 2:
-                    cv.put("when_type", "everyweek");
                     LinearLayout LineLayWeek = (LinearLayout) findViewById(R.id.days_in_week);
                     JSONArray array = new JSONArray();
                     for (int i = 0; i < LineLayWeek.getChildCount(); i++) {
-                        // System.out.println(((Button) linearLayout.getChildAt(i)).isSelected());
                         array.put(((Button) LineLayWeek.getChildAt(i)).isSelected());
                     }
                     json.put("days of week", array);
                     break;
                 case 3:
-                    cv.put("when_type", "calendar_days");
                     break;
             }
+            cv.put("type", types[type]);
             switch (type){
                 case 0:
-                    cv.put("type", "title&message");
                     json.put("title", ((EditText)findViewById(R.id.name_text)).getText());
                     json.put("message", ((EditText)findViewById(R.id.message)).getText());
                     break;
                 case 1:
-                    cv.put("type", "title");
                     json.put("title", ((EditText)findViewById(R.id.name_text)).getText());
                     break;
                 case 2:
-                    cv.put("type", "question");
                     json.put("question", ((EditText)findViewById(R.id.question_mess)).getText());
                     json.put("answer", ((EditText)findViewById(R.id.answer_mess)).getText());
                     break;
             }
             cv.put("info", json.toString());
-            // cv.put("message", message.getText().toString());
             cv.put("runned", 0);
 
             if (edit)
@@ -161,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
     AdapterView.OnItemSelectedListener onItemSelectedListener_days_in_week = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            // String text = (String) ((TextView) view).getText();
             findViewById(R.id.days_in_week).setVisibility(View.GONE);
             selected_item = position;
             switch (position){
@@ -182,14 +218,7 @@ public class MainActivity extends AppCompatActivity {
         button.setSelected(!button.isSelected());
     }
 
-//    public void OnClickQwest(View v){
-//        CheckBox checkbox = (CheckBox)v;
-//        if (checkbox.isChecked()){
-//            findViewById(R.id.Ask_answer).setVisibility(View.VISIBLE);
-//        } else {
-//            findViewById(R.id.Ask_answer).setVisibility(View.GONE);
-//        }
-//    }
+
     AdapterView.OnItemSelectedListener onItemSelectedListener_type = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

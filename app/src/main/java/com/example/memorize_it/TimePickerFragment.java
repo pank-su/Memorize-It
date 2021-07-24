@@ -1,5 +1,6 @@
 package com.example.memorize_it;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class TimePickerFragment extends DialogFragment
     }
 
 
+    @SuppressLint("SetTextI18n")
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         if (hourOfDay < 10 && minute < 10){
             this.view.setText("0" + hourOfDay + ":0"  + minute);

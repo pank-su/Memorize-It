@@ -91,17 +91,19 @@ public class NoteAdapter extends BaseAdapter {
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (selection_mode){
+            if (selection_mode) {
                 CheckBox checkBox = (CheckBox) v.findViewById(R.id.selection_button);
                 checkBox.setChecked(!checkBox.isChecked());
                 return;
             }
             Intent intent = new Intent(ctx, MainActivity.class);
-            intent.putExtra("name", ((TextView) v.findViewById(R.id.Name_note)).getText())
-                    .putExtra("edit", true)
-                    .putExtra("id", (int) v.getTag())
-                    .putExtra("time", ((TextView) v.findViewById(R.id.time_note)).getText())
-                    .putExtra("message", ((TextView) v.findViewById(R.id.annotation)).getText());
+//            intent.putExtra("name", ((TextView) v.findViewById(R.id.Name_note)).getText())
+//                    .putExtra("edit", true)
+//                    .putExtra("id", (int) v.getTag())
+//                    .putExtra("time", ((TextView) v.findViewById(R.id.time_note)).getText())
+//                    .putExtra("message", ((TextView) v.findViewById(R.id.annotation)).getText());
+            intent.putExtra("edit", true)
+                    .putExtra("id", (int) v.getTag());
             ctx.startActivity(intent);
             readActivity.finish();
         }
