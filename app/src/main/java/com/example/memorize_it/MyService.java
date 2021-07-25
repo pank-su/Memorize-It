@@ -14,6 +14,7 @@ import android.util.Pair;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.RemoteInput;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,7 +83,7 @@ public class MyService extends Service {
         startActivity(intent);
     }
 
-    public void notif(int id){
+    public void notif(int id) {
         //Connect to db
         DBHelper helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -91,9 +92,12 @@ public class MyService extends Service {
 
         String title = null;
         String text = null;
+
+        JSONObject info = null;
+        String type = null;
         try {
-            JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
-            String type = info.getString("type");
+            info = new JSONObject(c.getString(c.getColumnIndex("info")));
+            type = info.getString("type");
             switch (type){
                 case "title&message":
                     title = info.getString("title");
@@ -111,21 +115,42 @@ public class MyService extends Service {
             e.printStackTrace();
         }
 
-
         //Creating notification
         Intent intent = new Intent(this, OpenNote.class);
         intent.putExtra("name", title);
         intent.putExtra("message", text);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, UUID.randomUUID().hashCode(), intent, 0);
+
 
         //Creating notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
-                .setContentText(text)
-                .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        switch (type){
+            case "title":
+            case "title&message":
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, UUID.randomUUID().hashCode(), intent, 0);
+                builder.setContentIntent(pendingIntent).setContentText(text);
+                break;
+            case "question":
+                PendingIntent replyPendingIntent =
+                        PendingIntent.getService(this,
+                                id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                RemoteInput remoteInput = new RemoteInput.Builder("KeyR")
+                        .setLabel("Type message")
+                        .build();
+
+                NotificationCompat.Action action =
+                        new NotificationCompat.Action.Builder(android.R.drawable.ic_menu_send,
+                                "Ответ", replyPendingIntent)
+                                .addRemoteInput(remoteInput)
+                                .build();
+                builder.addAction(action);
+                break;
+        }
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(id, builder.build());
 
@@ -153,6 +178,7 @@ class PrimeThread extends Thread {
     MyService service;
     List<Pair<Date, Integer>> dates = new ArrayList();
     int today =  LocalDate.now().getDayOfMonth();
+    //int today = 25;
     @SuppressLint("SimpleDateFormat")
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
@@ -172,7 +198,6 @@ class PrimeThread extends Thread {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
                 // Это надо исправлять, но пока это лучший выход
                 for (Pair<Date, Integer> pair : dates) {
                     if (date_now != null && date_now.compareTo(pair.first) == 0) {
@@ -185,6 +210,7 @@ class PrimeThread extends Thread {
                     set_dates(true);
                 date_now = new Date();
                 int dayofmonth = LocalDate.now().getDayOfMonth();
+                //int dayofmonth = 25;
                 if (dayofmonth != today) {
                     update_table();
                     set_dates(true);
@@ -209,7 +235,7 @@ class PrimeThread extends Thread {
                 JSONArray times = new JSONArray(c.getString(c.getColumnIndex("times")));
                 JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
                 date = sdf.parse(times.getString(0));
-            } catch (JSONException | ParseException e) {
+            } catch (ParseException | JSONException e) {
                 e.printStackTrace();
             }
 

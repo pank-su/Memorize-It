@@ -138,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Connecting to DB
         SQLiteDatabase db = helper.getWritableDatabase();
-
         //Inserting content
         if (!my_time.getText().toString().isEmpty()) {
             cv.put("time", my_time.getText().toString());
@@ -217,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
         Button button = (Button) v;
         button.setSelected(!button.isSelected());
     }
-
 
     AdapterView.OnItemSelectedListener onItemSelectedListener_type = new AdapterView.OnItemSelectedListener() {
         @Override

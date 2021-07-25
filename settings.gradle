@@ -1,3 +1,4 @@
 include ':app'
 rootProject.name = "Memorize-It"
 include ':lists'
+include ':notifs_with_reply'
