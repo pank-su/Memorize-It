@@ -1,24 +1,21 @@
 package com.example.memorize_it;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.RadioButton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONObject;
 
@@ -139,7 +136,7 @@ public class ReadActivity extends AppCompatActivity {
         finish();
     }
 
-    public void change_selection_mode(){
+    public void change_selection_mode() {
         menu.getItem(0).setChecked(selection_mode);
         adapter.selection_mode = selection_mode;
         adapter.notifyDataSetChanged();
@@ -147,28 +144,22 @@ public class ReadActivity extends AppCompatActivity {
         selected_ids.clear();
     }
 
-    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            selection_mode = !selection_mode;
-            change_selection_mode();
-            if (selection_mode)
-                ((CheckBox) v.findViewById(R.id.selection_button)).setChecked(true);
-            return true;
-        }
+    View.OnLongClickListener onLongClickListener = v -> {
+        selection_mode = !selection_mode;
+        change_selection_mode();
+        if (selection_mode)
+            ((CheckBox) v.findViewById(R.id.selection_button)).setChecked(true);
+        return true;
     };
 
-    CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton v, boolean isChecked) {
-            if (isChecked)
-                selected_ids.add((Integer) v.getTag());
-            else {
-                selected_ids.remove(selected_ids.indexOf((Integer) v.getTag()));
-                if (selected_ids.size() == 0){
-                    selection_mode = false;
-                    change_selection_mode();
-                }
+    CompoundButton.OnCheckedChangeListener onCheckedChangeListener = (v, isChecked) -> {
+        if (isChecked)
+            selected_ids.add((Integer) v.getTag());
+        else {
+            selected_ids.remove(selected_ids.indexOf((Integer) v.getTag()));
+            if (selected_ids.size() == 0) {
+                selection_mode = false;
+                change_selection_mode();
             }
         }
     };
