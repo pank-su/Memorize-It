@@ -93,13 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Connecting to DB
         SQLiteDatabase db = helper.getWritableDatabase();
-
         //Inserting content
         if (!my_time.getText().toString().isEmpty()) {
             // cv.put("name", name.getText().toString());
             cv.put("time", my_time.getText().toString());
             JSONObject json = new JSONObject();
-            System.out.println(selected_item);
             switch (selected_item){
                 case 0:
                     cv.put("when_type", "one_time");
@@ -182,14 +180,6 @@ public class MainActivity extends AppCompatActivity {
         button.setSelected(!button.isSelected());
     }
 
-//    public void OnClickQwest(View v){
-//        CheckBox checkbox = (CheckBox)v;
-//        if (checkbox.isChecked()){
-//            findViewById(R.id.Ask_answer).setVisibility(View.VISIBLE);
-//        } else {
-//            findViewById(R.id.Ask_answer).setVisibility(View.GONE);
-//        }
-//    }
     AdapterView.OnItemSelectedListener onItemSelectedListener_type = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
