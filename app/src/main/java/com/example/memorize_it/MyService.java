@@ -164,7 +164,7 @@ public class MyService extends Service {
         cv.put("runned", 1);
         // db.delete("Notes", "id = ?", new String[] {id_in_table});
         db.update("Notes", cv, "id = ?", new String[]{Integer.toString(id)});
-        db.delete("working_notes", "note_id = ?", new String[]{Integer.toString(id)});
+        // db.delete("working_notes", "note_id = ?", new String[]{Integer.toString(id)});
         db.close();
         helper.close();
 
@@ -178,7 +178,6 @@ class PrimeThread extends Thread {
     MyService service;
     List<Pair<Date, Integer>> dates = new ArrayList();
     int today =  LocalDate.now().getDayOfMonth();
-    //int today = 25;
     @SuppressLint("SimpleDateFormat")
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
@@ -206,15 +205,15 @@ class PrimeThread extends Thread {
                         modif = true;
                     }
                 }
-                if (modif)
-                    set_dates(true);
                 date_now = new Date();
                 int dayofmonth = LocalDate.now().getDayOfMonth();
-                //int dayofmonth = 25;
                 if (dayofmonth != today) {
                     update_table();
                     set_dates(true);
                     today = dayofmonth;
+                } else if (modif) {
+                    update_table();
+                    set_dates(true);
                 }
                 Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
@@ -238,8 +237,8 @@ class PrimeThread extends Thread {
             } catch (ParseException | JSONException e) {
                 e.printStackTrace();
             }
-
-            dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
+            // dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
+            modif = false;
             if (!from_run){
                 date_now = new Date();
                 try {
@@ -249,12 +248,19 @@ class PrimeThread extends Thread {
                 }
                 if (date_now != null && date_now.compareTo(date) == 0){
                     this.service.notif(c.getInt(c.getColumnIndex("note_id")));
-                }
-            }
+                    modif = true;
+                } else
+                    dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
+
+            } else
+                dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
         }
         c.close();
         helper.close();
         db.close();
+        if (modif) {
+            update_table();
+        }
     }
 
 
@@ -264,7 +270,7 @@ class PrimeThread extends Thread {
         SQLiteDatabase db_notes = helper.getReadableDatabase();
         Cursor c = db_notes.query("Notes", null, null, null, null, null, null);
         SQLiteDatabase db_working_notes = helper.getWritableDatabase();
-        db_working_notes.delete("working_notes", "?", new String[] {"TRUE"});
+        db_working_notes.delete("working_notes", null, null);
         for (int i = 0; i < c.getCount(); i++) {
             c.moveToPosition(i);
             if (c.getInt(c.getColumnIndex("runned")) == 1) {
