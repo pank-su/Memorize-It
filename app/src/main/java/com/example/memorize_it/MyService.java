@@ -205,16 +205,15 @@ class PrimeThread extends Thread {
                         modif = true;
                     }
                 }
-                if (modif) {
-                    update_table();
-                    set_dates(true);
-                }
                 date_now = new Date();
                 int dayofmonth = LocalDate.now().getDayOfMonth();
                 if (dayofmonth != today) {
                     update_table();
                     set_dates(true);
                     today = dayofmonth;
+                } else if (modif) {
+                    update_table();
+                    set_dates(true);
                 }
                 Thread.sleep(60000 - date_now.getSeconds() * 1000);
             } catch (InterruptedException e) {
@@ -238,7 +237,7 @@ class PrimeThread extends Thread {
             } catch (ParseException | JSONException e) {
                 e.printStackTrace();
             }
-            dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
+            // dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
             modif = false;
             if (!from_run){
                 date_now = new Date();
@@ -250,18 +249,18 @@ class PrimeThread extends Thread {
                 if (date_now != null && date_now.compareTo(date) == 0){
                     this.service.notif(c.getInt(c.getColumnIndex("note_id")));
                     modif = true;
-                }
+                } else
+                    dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
 
-            }
+            } else
+                dates.add(Pair.create(date, c.getInt(c.getColumnIndex("note_id"))));
         }
         c.close();
         helper.close();
         db.close();
         if (modif) {
             update_table();
-            set_dates(false);
         }
-
     }
 
 
