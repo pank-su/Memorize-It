@@ -1,6 +1,7 @@
 package com.example.memorize_it;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Pair;
 
@@ -32,6 +34,7 @@ public class MyService extends Service {
     public static final String CHANNEL_ID = "2";
     PrimeThread p;
     ContentValues cv;
+    private static final String REPLY_ACTION = "REPLY";
 
     public MyService() {
     }
@@ -44,6 +47,23 @@ public class MyService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent.getAction() == REPLY_ACTION){
+            String replyText = null;
+            Bundle results = RemoteInput.getResultsFromIntent(intent);
+            if (results != null) {
+                replyText = results.getCharSequence("KeyR").toString();
+            }
+            String text = "Вы ответили неверно";
+            if (replyText.equalsIgnoreCase(intent.getStringExtra("answer")))
+                text = "Вы ответили верно";
+            Notification repliedNotification = new Notification.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setContentText(text)
+                    .build();
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(intent.getIntExtra("id", 0), repliedNotification);
+            return super.onStartCommand(intent, flags, startId);
+        }
         try {
             p.update_table();
             p.set_dates(false);
@@ -116,25 +136,27 @@ public class MyService extends Service {
         }
 
         //Creating notification
-        Intent intent = new Intent(this, OpenNote.class);
-        intent.putExtra("name", title);
-        intent.putExtra("message", text);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-
-        //Creating notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
+        Intent intent;
         switch (type){
             case "title":
             case "title&message":
+                intent = new Intent(this, OpenNote.class);
+                intent.putExtra("name", title);
+                intent.putExtra("message", text);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, UUID.randomUUID().hashCode(), intent, 0);
                 builder.setContentIntent(pendingIntent).setContentText(text);
                 break;
             case "question":
+                intent = new Intent(this, MyService.class);
+                intent.putExtra("id", id);
+                intent.putExtra("answer", text);
+                intent.setAction(REPLY_ACTION);
+                // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 PendingIntent replyPendingIntent =
                         PendingIntent.getService(this,
                                 id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -147,8 +169,10 @@ public class MyService extends Service {
                         new NotificationCompat.Action.Builder(android.R.drawable.ic_menu_send,
                                 "Ответ", replyPendingIntent)
                                 .addRemoteInput(remoteInput)
+                                .setAllowGeneratedReplies(true)
                                 .build();
                 builder.addAction(action);
+                builder.setShowWhen(true);
                 break;
         }
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -167,7 +191,6 @@ public class MyService extends Service {
         // db.delete("working_notes", "note_id = ?", new String[]{Integer.toString(id)});
         db.close();
         helper.close();
-
     }
 }
 
