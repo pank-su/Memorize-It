@@ -137,6 +137,7 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     public void change_selection_mode() {
+        System.out.println(selected_ids.toString());
         menu.getItem(0).setChecked(selection_mode);
         adapter.selection_mode = selection_mode;
         adapter.notifyDataSetChanged();
@@ -156,7 +157,8 @@ public class ReadActivity extends AppCompatActivity {
         if (isChecked)
             selected_ids.add((Integer) v.getTag());
         else {
-            selected_ids.remove(selected_ids.indexOf((Integer) v.getTag()));
+            if (selected_ids.indexOf((Integer) v.getTag()) != -1)
+                selected_ids.remove(selected_ids.indexOf((Integer) v.getTag()));
             if (selected_ids.size() == 0) {
                 selection_mode = false;
                 change_selection_mode();
