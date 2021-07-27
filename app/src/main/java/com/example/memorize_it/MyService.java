@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -212,7 +213,7 @@ class PrimeThread extends Thread {
         if (SDK_INT >= 26){
             today = LocalDate.now().getDayOfMonth();
         } else{
-            System.out.println("FFFFFFFFFFFFFFF");
+            today = Calendar.getInstance().getTime().getDate();
         }
     }
 
@@ -241,7 +242,7 @@ class PrimeThread extends Thread {
                 if (SDK_INT >= 26){
                     dayofmonth = LocalDate.now().getDayOfMonth();
                 } else{
-                    System.out.println("FFFFFFFFFFFFFFF");
+                    dayofmonth = date_now.getDate();
                 }
                 
                 if (dayofmonth != today) {
@@ -324,8 +325,14 @@ class PrimeThread extends Thread {
                         break;
                     case "everyweek":
                         JSONArray days_of_week = info.getJSONArray("days of week");
-                        LocalDate localDate = LocalDate.now();
-                        if (!(boolean) days_of_week.get(localDate.getDayOfWeek().getValue() - 1))
+                        int day_week = 0;
+                        if (SDK_INT >= 26) {
+                            LocalDate localDate = LocalDate.now();
+                            day_week = localDate.getDayOfWeek().getValue();
+                        } else{
+                            day_week = Calendar.getInstance().getTime().getDay();
+                        }
+                        if (!(boolean) days_of_week.get(day_week - 1))
                             cont = true;
                         break;
                 }
