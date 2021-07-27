@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
             c = db.query("Notes", null, "id = ?", new String[]{Integer.toString(id)}, null, null, null);
             c.moveToPosition(0);
             type = Arrays.asList(types).indexOf(c.getString(c.getColumnIndex("type")));
-            System.out.println(Arrays.asList(when_types));
             selected_item = Arrays.asList(when_types).indexOf(c.getString(c.getColumnIndex("when_type")));
             try {
                 JSONObject info = new JSONObject(c.getString(c.getColumnIndex("info")));
@@ -128,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
     public void showTimePickerDialog(View v) {
         DialogFragment newFragment = new TimePickerFragment(findViewById(R.id.my_time));
         newFragment.show(getSupportFragmentManager(), "timePicker");
-        System.out.println(newFragment.getDialog());
     }
     public void OnClicked(View v) throws JSONException {
         TextView my_time = findViewById(R.id.my_time);
@@ -142,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         if (!my_time.getText().toString().isEmpty()) {
             cv.put("time", my_time.getText().toString());
             JSONObject json = new JSONObject();
-            System.out.println(selected_item);
             cv.put("when_type", when_types[selected_item]);
             switch (selected_item){
                 case 0:
@@ -220,19 +217,24 @@ public class MainActivity extends AppCompatActivity {
     AdapterView.OnItemSelectedListener onItemSelectedListener_type = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            findViewById(R.id.Title_lay).setVisibility(View.GONE);
-            findViewById(R.id.message_lay).setVisibility(View.GONE);
-            findViewById(R.id.Ask_answer_lay).setVisibility(View.GONE);
             type = position;
             switch (position){
                 case 0:
+                    findViewById(R.id.Ask_answer_lay).setVisibility(View.GONE);
+
                     findViewById(R.id.Title_lay).setVisibility(View.VISIBLE);
                     findViewById(R.id.message_lay).setVisibility(View.VISIBLE);
                     break;
                 case 1:
+                    findViewById(R.id.message_lay).setVisibility(View.GONE);
+                    findViewById(R.id.Ask_answer_lay).setVisibility(View.GONE);
+
                     findViewById(R.id.Title_lay).setVisibility(View.VISIBLE);
                     break;
                 case 2:
+                    findViewById(R.id.Title_lay).setVisibility(View.GONE);
+                    findViewById(R.id.message_lay).setVisibility(View.GONE);
+
                     findViewById(R.id.Ask_answer_lay).setVisibility(View.VISIBLE);
             }
         }

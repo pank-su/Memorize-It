@@ -22,7 +22,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class ReadActivity extends AppCompatActivity {
-    String TAG = "HO-HO-HO";
     ArrayList<Note> notes = new ArrayList<>();
     NoteAdapter adapter;
     boolean selection_mode = false;
@@ -33,7 +32,6 @@ public class ReadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
-        Log.i(TAG, "Start");
         findViewById(R.id.i_havent_text).setVisibility(View.INVISIBLE);
         fillData();
         adapter = new NoteAdapter(this, notes, this);
@@ -77,7 +75,6 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     void fillData() {
-        Log.i(TAG, "Filldata");
         DBHelper helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor c = db.query("Notes", null, null, null, null, null, null);
@@ -121,7 +118,6 @@ public class ReadActivity extends AppCompatActivity {
             }
 
             Note n = new Note(name, annot, time, runned, id);
-            Log.i(TAG, name + " " + annot + " " + time);
             notes.add(n);
         }while (c.moveToNext());
 
@@ -137,7 +133,6 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     public void change_selection_mode() {
-        System.out.println(selected_ids.toString());
         menu.getItem(0).setChecked(selection_mode);
         adapter.selection_mode = selection_mode;
         adapter.notifyDataSetChanged();
