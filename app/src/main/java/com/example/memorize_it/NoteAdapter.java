@@ -63,22 +63,27 @@ public class NoteAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.Name_note)).setText(n.name);
         ((TextView) view.findViewById(R.id.annotation)).setText(n.annotation);
         ((TextView) view.findViewById(R.id.time_note)).setText(n.date);
+
         Switch switch_ = (Switch) view.findViewById(R.id.switch1);
         (switch_).setChecked(n.runned == 0);
         switch_.setTag(n.id);
         switch_.setOnCheckedChangeListener(onCheckedChangeListener);
+
         Button btn = view.findViewById(R.id.delete);
         btn.setTag(n.id);
         btn.setOnClickListener(onClickListener_btn);
+
         view.setTag(n.id);
         view.setOnClickListener(onClickListener);
         view.setLongClickable(true);
         view.setOnLongClickListener(readActivity.onLongClickListener);
         view.findViewById(R.id.delete).setVisibility(View.GONE);
+
         CheckBox sel_btn = (CheckBox) view.findViewById(R.id.selection_button);
         sel_btn.setVisibility(View.GONE);
         sel_btn.setTag(n.id);
         sel_btn.setOnCheckedChangeListener(readActivity.onCheckedChangeListener);
+
         if (selection_mode){
             sel_btn.setVisibility(View.VISIBLE);
         } else {
@@ -97,11 +102,13 @@ public class NoteAdapter extends BaseAdapter {
                 return;
             }
             Intent intent = new Intent(ctx, MainActivity.class);
-//            intent.putExtra("name", ((TextView) v.findViewById(R.id.Name_note)).getText())
-//                    .putExtra("edit", true)
-//                    .putExtra("id", (int) v.getTag())
-//                    .putExtra("time", ((TextView) v.findViewById(R.id.time_note)).getText())
-//                    .putExtra("message", ((TextView) v.findViewById(R.id.annotation)).getText());
+
+/*            intent.putExtra("name", ((TextView) v.findViewById(R.id.Name_note)).getText())
+                    .putExtra("edit", true)
+                    .putExtra("id", (int) v.getTag())
+                    .putExtra("time", ((TextView) v.findViewById(R.id.time_note)).getText())
+                    .putExtra("message", ((TextView) v.findViewById(R.id.annotation)).getText());*/
+
             intent.putExtra("edit", true)
                     .putExtra("id", (int) v.getTag());
             ctx.startActivity(intent);

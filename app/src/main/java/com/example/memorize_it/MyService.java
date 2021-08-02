@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Build;
 import android.util.Pair;
 
 import androidx.annotation.RequiresApi;
@@ -26,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,14 +38,13 @@ public class MyService extends Service {
     ContentValues cv;
     private static final String REPLY_ACTION = "REPLY";
 
-    public MyService() {
-    }
+    public MyService() {}
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -53,7 +54,7 @@ public class MyService extends Service {
             if (results != null) {
                 replyText = results.getCharSequence("KeyR").toString();
             }
-            String text = "Вы ответили неверно";
+            String text = "Вы ответили неверно. Правильный ответ: " + intent.getStringExtra("answer");
             if (replyText.equalsIgnoreCase(intent.getStringExtra("answer")))
                 text = "Вы ответили верно";
             Notification repliedNotification = new Notification.Builder(getApplicationContext(), CHANNEL_ID)
@@ -130,6 +131,7 @@ public class MyService extends Service {
                 case "question":
                     title = info.getString("question");
                     text = info.getString("answer");
+                    break;
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -196,16 +198,23 @@ public class MyService extends Service {
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 class PrimeThread extends Thread {
+    final int SDK_INT = Build.VERSION.SDK_INT;
     boolean modif = false;
     Date date_now;
     MyService service;
     List<Pair<Date, Integer>> dates = new ArrayList();
-    int today =  LocalDate.now().getDayOfMonth();
+    int today;
+
     @SuppressLint("SimpleDateFormat")
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
     public PrimeThread(MyService service){
         this.service = service;
+        if (SDK_INT >= 26){
+            today = LocalDate.now().getDayOfMonth();
+        } else{
+            today = Calendar.getInstance().getTime().getDate();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -229,7 +238,13 @@ class PrimeThread extends Thread {
                     }
                 }
                 date_now = new Date();
-                int dayofmonth = LocalDate.now().getDayOfMonth();
+                int dayofmonth = 0;
+                if (SDK_INT >= 26){
+                    dayofmonth = LocalDate.now().getDayOfMonth();
+                } else{
+                    dayofmonth = date_now.getDate();
+                }
+                
                 if (dayofmonth != today) {
                     update_table();
                     set_dates(true);
@@ -310,15 +325,20 @@ class PrimeThread extends Thread {
                         break;
                     case "everyweek":
                         JSONArray days_of_week = info.getJSONArray("days of week");
-                        LocalDate localDate = LocalDate.now();
-                        if (!(boolean) days_of_week.get(localDate.getDayOfWeek().getValue() - 1)) {
-                            cont = true;
+                        int day_week = 0;
+                        if (SDK_INT >= 26) {
+                            LocalDate localDate = LocalDate.now();
+                            day_week = localDate.getDayOfWeek().getValue();
+                        } else{
+                            day_week = Calendar.getInstance().getTime().getDay();
                         }
+                        if (!(boolean) days_of_week.get(day_week - 1))
+                            cont = true;
                         break;
                 }
-                if (cont) {
+                if (cont)
                     continue;
-                }
+
                 info.put("when_type", when_type);
                 info.put("type", c.getString(c.getColumnIndex("type")));
 
