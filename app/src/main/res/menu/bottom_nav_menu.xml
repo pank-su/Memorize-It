@@ -9,6 +9,7 @@
     <item
         android:id="@+id/mainActivity"
         android:icon="@drawable/ic_baseline_add_box_24"
+        android:title="Add Note"
         />
     <item
         android:id="@+id/navigation_setiings"
