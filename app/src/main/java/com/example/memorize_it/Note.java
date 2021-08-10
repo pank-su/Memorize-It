@@ -7,7 +7,7 @@ public class Note {
     byte runned;
     int id;
 
-    Note(String name, String annotation, String date, int runned, int id){
+    public Note(String name, String annotation, String date, int runned, int id){
         this.name = name;
         this.annotation = annotation;
         this.date = date;
