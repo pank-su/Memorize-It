@@ -8,15 +8,14 @@
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.memorize_it.ui.read.ReadFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_notifications"
         tools:layout="@layout/fragment_read" />
 
 
     <fragment
         android:id="@+id/navigation_setiings"
-        android:name="com.example.memorize_it.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:name="com.example.memorize_it.ui.settings.SettingsFragment"
+        android:label="@string/title_settings" />
     <activity
         android:id="@+id/mainActivity"
         android:name="com.example.memorize_it.MainActivity"
