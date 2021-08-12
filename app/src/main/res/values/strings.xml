@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Memorize-It</string>
+    <string name="title_activity_general">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

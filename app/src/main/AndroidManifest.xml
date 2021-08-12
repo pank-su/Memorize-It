@@ -11,7 +11,9 @@
         android:roundIcon="@drawable/ic__ec66001"
         android:supportsRtl="true"
         android:theme="@style/Theme.MemorizeIt">
-
+        <activity
+            android:name=".General"
+            android:label="@string/title_activity_general"></activity>
         <activity android:name=".OpenNote" />
         <activity android:name=".ReadActivity" />
         <activity android:name=".Menu">

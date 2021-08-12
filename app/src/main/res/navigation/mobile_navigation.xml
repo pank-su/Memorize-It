@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_notifications">
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.memorize_it.ui.read.ReadFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_read" />
+
+
+    <fragment
+        android:id="@+id/navigation_setiings"
+        android:name="com.example.memorize_it.ui.settings.SettingsFragment"
+        android:label="@string/title_settings" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.memorize_it.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+</navigation>

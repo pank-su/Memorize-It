@@ -1,10 +1,10 @@
 package com.example.memorize_it;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class Menu extends AppCompatActivity {
     @Override
@@ -23,7 +23,7 @@ public class Menu extends AppCompatActivity {
                 intent = new Intent(this, ReadActivity.class);
                 break;
             case R.id.Exit_button:
-                finish();
+                intent = new Intent(this, General.class);
                 break;
         }
         startActivity(intent);

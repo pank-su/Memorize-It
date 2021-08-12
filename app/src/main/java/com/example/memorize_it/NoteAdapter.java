@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.memorize_it.ui.read.ReadFragment;
+
 import java.util.ArrayList;
 
 public class NoteAdapter extends BaseAdapter {
@@ -24,13 +26,21 @@ public class NoteAdapter extends BaseAdapter {
     LayoutInflater inf;
     ArrayList<Note> notes;
     ReadActivity readActivity;
+    ReadFragment readFragment;
     boolean selection_mode = false;
 
-    NoteAdapter(Context context, ArrayList<Note> objects, ReadActivity readActivity) {
+    public NoteAdapter(Context context, ArrayList<Note> objects, ReadActivity readActivity) {
         ctx = context;
         notes = objects;
         inf = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.readActivity = readActivity;
+    }
+
+    public NoteAdapter(Context context, ArrayList<Note> objects, ReadFragment readFragment) {
+        ctx = context;
+        notes = objects;
+        inf = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.readFragment = readFragment;
     }
 
 
@@ -76,19 +86,26 @@ public class NoteAdapter extends BaseAdapter {
         view.setTag(n.id);
         view.setOnClickListener(onClickListener);
         view.setLongClickable(true);
-        view.setOnLongClickListener(readActivity.onLongClickListener);
+
+
         view.findViewById(R.id.delete).setVisibility(View.GONE);
 
         CheckBox sel_btn = (CheckBox) view.findViewById(R.id.selection_button);
         sel_btn.setVisibility(View.GONE);
         sel_btn.setTag(n.id);
-        sel_btn.setOnCheckedChangeListener(readActivity.onCheckedChangeListener);
 
         if (selection_mode){
             sel_btn.setVisibility(View.VISIBLE);
         } else {
             sel_btn.setChecked(false);
             view.findViewById(R.id.delete).setVisibility(View.VISIBLE);
+        }
+        if (readActivity == null){
+            // view.setOnLongClickListener(readFragment.onLongClickListener);
+            // sel_btn.setOnCheckedChangeListener(readFragment.onCheckedChangeListener);
+        } else {
+            view.setOnLongClickListener(readActivity.onLongClickListener);
+            sel_btn.setOnCheckedChangeListener(readActivity.onCheckedChangeListener);
         }
         return view;
     }
@@ -112,7 +129,8 @@ public class NoteAdapter extends BaseAdapter {
             intent.putExtra("edit", true)
                     .putExtra("id", (int) v.getTag());
             ctx.startActivity(intent);
-            readActivity.finish();
+            if (readActivity != null)
+                readActivity.finish();
         }
     };
 
